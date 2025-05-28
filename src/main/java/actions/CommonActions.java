@@ -69,6 +69,15 @@ public class CommonActions {
         waitForElementDisplayed(element);
     }
 
+    public String getTextFromElement(WebElement element) {
+        waitForElementDisplayed(element);
+        String text = element.getText();
+        if(text == null || text.isEmpty()) {
+            text = element.getAttribute("value");
+        }
+        System.out.println("Getting text from element: " + text);
+        return text;
+    }
 
 
 

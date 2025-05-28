@@ -22,5 +22,11 @@ public class ProductPage {
     @FindBy(css = "[data-test-id='price-wrapper']")
     public WebElement productPrice;
 
+    public String getProductTitle() {
+        return commonActions.getTextFromElement(productTitle);
+    }
+    public String getProductPrice() {
+        return commonActions.getTextFromElement(productPrice);
+    }
 
 }

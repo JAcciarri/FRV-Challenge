@@ -20,7 +20,7 @@ public class ProductsSearchedPage {
 
     @FindBy(css = "[data-test-id='results-list']")
     public WebElement productsListContainer;
-    @FindBy(css = "[data-test-id='results-list'] [data-test-id='result-item']")
+    @FindBy(xpath = "//*[@data-test-id='results-list']//*[@data-test-id='result-item']")
     public List<WebElement> productsList;
 
     public List<WebElement> getProductsList() {
@@ -31,6 +31,24 @@ public class ProductsSearchedPage {
     public void selectProduct(WebElement product) {
         WebElement clickableProduct = product.findElement(By.xpath(".//a"));
         commonActions.clickElement(clickableProduct);
+    }
+
+    public String getProductOriginalPriceByIndex(int index) {
+        WebElement product = productsList.get(index);
+        WebElement priceElement = product.findElements(By.xpath(".//span[contains(text(), '$')]")).get(0);
+        return commonActions.getTextFromElement(priceElement);
+    }
+
+    public String getProductDiscountedPriceByIndex(int index) {
+        WebElement product = productsList.get(index);
+        WebElement priceElement = product.findElements(By.xpath(".//span[contains(text(), '$')]")).get(1);
+        return commonActions.getTextFromElement(priceElement);
+    }
+
+    public String getProductTitleByIndex(int index) {
+        WebElement product = productsList.get(index);
+        WebElement titleElement = product.findElement(By.xpath(".//span"));
+        return commonActions.getTextFromElement(titleElement);
     }
 
 }

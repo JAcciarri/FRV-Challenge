@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import pages.FravegaMainPage;
+import pages.ProductPage;
 import pages.ProductsSearchedPage;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
                 CommonActions commonActions = new CommonActions(driver);
                 FravegaMainPage fravegaMainPage = new FravegaMainPage(driver);
                 ProductsSearchedPage productsSearchedPage = new ProductsSearchedPage(driver);
+                ProductPage productPage = new ProductPage(driver);
 
                 try {
                         fravegaMainPage.openMainPageAndHandleModal();
@@ -32,8 +34,20 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
                         }
 
                         System.out.println("Cantidad de productos encontrados: " + products.size());
+
+                        String originalPrice = productsSearchedPage.getProductOriginalPriceByIndex(1);
+                        String discountedPrice = productsSearchedPage.getProductDiscountedPriceByIndex(1);
+                        String productTitle = productsSearchedPage.getProductTitleByIndex(1);
+                        System.out.println("Titulo del segundo producto: " + productTitle);
+                        System.out.println("Precio original del segundo producto: " + originalPrice);
+                        System.out.println("Precio con descuento del segundo producto: " + discountedPrice);
+
+                        // TODO : IMPLEMENTAR UN LOGGER, NO USAR SYSTEM.OUT.PRINTLN
+
+                        // Ahora vamos a hacer click en el segundo producto de la lista y verificar todo
                         productsSearchedPage.selectProduct(products.get(1)); // click en el segundo producto de la lista
                         commonActions.waitForPageLoad();
+
 
                         // Los proximos pasos van a ser:
                         // 1. Verificar que el titulo del producto sea correcto
