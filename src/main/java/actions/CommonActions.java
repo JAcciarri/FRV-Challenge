@@ -1,17 +1,15 @@
 package actions;
 
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import utils.LoggerUtil;
 
 import java.time.Duration;
+import java.util.List;
 
 public class CommonActions {
 
@@ -22,7 +20,10 @@ public class CommonActions {
 
     public CommonActions(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(MAX_TIMEOUT));
+        this.wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(MAX_TIMEOUT))
+                .pollingEvery(Duration.ofMillis(500))
+                .ignoring(NoSuchElementException.class);
     }
 
     public void openPage(String url) {
@@ -35,35 +36,31 @@ public class CommonActions {
         wait.until(pageLoadCondition);
     }
 
-    public boolean waitForElementDisplayed(WebElement element) {
-        boolean isDisplayed;
+    public void waitForElementDisplayed(WebElement element) {
         try {
-            isDisplayed = wait.until(ExpectedConditions.visibilityOf(element)).isDisplayed();
+           wait.until(ExpectedConditions.visibilityOf(element)).isDisplayed();
         } catch (TimeoutException e) {
             logger.info("Element not displayed within the timeout period: " + element.toString());
-            return false;
         }
-        return isDisplayed;
     }
 
     public void clickElement(WebElement element){
-        waitForElementDisplayed(element);
-        String elementDescription = element.getAttribute("data-test-id");
-        elementDescription = (elementDescription != null && !elementDescription.isEmpty()) ? elementDescription : element.toString();
-        logger.info("Clicking on element: " + elementDescription);
-        element.click();
+        clickElement(element, "");
     }
 
     public void clickElement(WebElement element, String description) {
         waitForElementDisplayed(element);
-        logger.info("Clicking on element: " + description);
+        String desc = (description == null || description.isEmpty())
+                ? element.getAttribute("data-test-id")
+                : description;
+        logger.info("Clicking on element: {}", desc);
         element.click();
     }
 
     public void typeText(WebElement element, String text) {
         waitForElementDisplayed(element);
         element.clear();
-        logger.info("Typing text: " + text);
+        logger.info("Typing text: {}", text);
         element.sendKeys(text);
     }
 
@@ -78,12 +75,49 @@ public class CommonActions {
         if(text == null || text.isEmpty()) {
             text = element.getAttribute("value");
         }
-        logger.info("Getting text from element: " + text);
+        logger.info("Getting text from element: {}", text);
         return text;
     }
 
+    public boolean isElementDisplayed(WebElement element) {
+        try {
+            return wait.until(ExpectedConditions.visibilityOf(element)).isDisplayed();
+        } catch (TimeoutException e) {
+            logger.info("Element not displayed: {}", element.toString());
+            return false;
+        }
+    }
 
+    public boolean isElementEnabled(WebElement element) {
+        try {
+            wait.until(ExpectedConditions.visibilityOf(element));
+            wait.until(ExpectedConditions.elementToBeClickable(element));
+            return true;
+        } catch (Exception e) {
+            logger.info("Element not enabled: {}", element.toString());
+            return false;
+        }
+    }
 
+    /* Actualmente en la pagina de fravega pude notar que hay mas de un elemento con el mismo selector para varios elementos
+    Asi que decidi hacer este workaround para ayudar a los page object classes a obtener el primer elemento visible
+    */
+    public WebElement getFirstVisibleElement(List<WebElement> elements, String context) {
+        try {
+            for (WebElement element : elements) {
+                wait.until(ExpectedConditions.visibilityOf(element));
+                if (element.isDisplayed()) {
+                    logger.info("Elemento visible encontrado para {}: {}", context, element);
+                    return element;
+                }
+            }
+        } catch (Exception e) {
+            logger.warn("Excepcion durante la búsqueda del elemento visible para {}: {}", context, e.getMessage());
+        }
+
+        logger.warn("No se encontro ningún elemento visible para {}", context);
+        return null;
+    }
 
 
 

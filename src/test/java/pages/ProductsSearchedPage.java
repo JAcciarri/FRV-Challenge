@@ -34,7 +34,8 @@ public class ProductsSearchedPage {
 
     public void selectProduct(WebElement product) {
         WebElement clickableProduct = product.findElement(By.xpath(".//a"));
-        commonActions.clickElement(clickableProduct);
+        commonActions.clickElement(clickableProduct, "Link del producto");
+        commonActions.waitForPageLoad();
     }
 
     public String getProductOriginalPriceByIndex(int index) {

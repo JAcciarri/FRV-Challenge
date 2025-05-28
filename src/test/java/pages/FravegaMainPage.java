@@ -36,7 +36,7 @@ public class FravegaMainPage {
 
     public void openMainPageAndHandleModal() {
         openFravegaMainPage();
-        if (commonActions.waitForElementDisplayed(modalPostalCode)) {
+        if (commonActions.isElementDisplayed(modalPostalCode)) {
             commonActions.clickElement(modalPostalCodeCloseButton);
         }
     }
