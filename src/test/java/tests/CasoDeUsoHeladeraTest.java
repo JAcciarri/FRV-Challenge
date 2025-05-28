@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 import pages.FravegaMainPage;
 
-public class PrimerCasoDeUsoTest extends ApplicationBaseTest {
+public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
 
         @Test
         public void verificarCasoDeUsoHeladera(){

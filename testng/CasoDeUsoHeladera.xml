@@ -2,8 +2,9 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="TestSuite" parallel="classes" thread-count="3">
     <test name="Valid/Invalid Login Test">
+        <parameter name="browser" value="chrome"/>
         <classes>
-            <class name="tests.PrimerCasoDeUsoTest">
+            <class name="tests.CasoDeUsoHeladeraTest">
                 <methods>
                     <include name="verificarCasoDeUsoHeladera"/>
                 </methods>
