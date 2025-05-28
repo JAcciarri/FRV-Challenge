@@ -6,17 +6,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.slf4j.Logger;
+import utils.LoggerUtil;
 
 import java.util.List;
 
 public class ProductsSearchedPage {
 
     CommonActions commonActions;
+    private static final Logger logger = LoggerUtil.getLogger(ProductsSearchedPage.class);
 
     public ProductsSearchedPage(WebDriver driver) {
         this.commonActions = new CommonActions(driver);
         PageFactory.initElements(driver, this);
     }
+
 
     @FindBy(css = "[data-test-id='results-list']")
     public WebElement productsListContainer;
