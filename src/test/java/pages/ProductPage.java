@@ -1,6 +1,7 @@
 package pages;
 
 import actions.CommonActions;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -18,7 +19,6 @@ public class ProductPage {
     public ProductPage(WebDriver driver) {
         this.commonActions = new CommonActions(driver);
         PageFactory.initElements(driver, this);
-        logger.info("Init de elementos: tamaño de productTitle = {}", productTitle.size());
     }
 
     @FindBy(css = "[data-test-id='product-info'] [data-test-id='product-title']")
@@ -26,19 +26,14 @@ public class ProductPage {
     @FindBy(xpath = "//div[@data-test-id='price-wrapper']//span[contains(text(),'$')]")
     public List<WebElement> productPrices;
     @FindBy(css = "[data-test-id='product-buy-button']")
-    public WebElement buyButton;
+    public List<WebElement> buyButton;
     @FindBy(xpath = "//*[@data-test-id='product-info']//button[text()='Agregar al carrito']")
-    public WebElement addToCartButton;
+    public List<WebElement> addToCartButton;
     @FindBy(css = "[data-test-id='carousel-product']")
     public List<WebElement> productCarousel;
 
 
 
-    public void waitForProductPageToLoad() {
-        commonActions.waitForPageLoad();
-        WebElement visibleCarousel = commonActions.getFirstVisibleElement(productCarousel, "Product Carousel");
-        commonActions.waitForElementDisplayed(visibleCarousel);
-    }
 
     public String getProductOriginalPrice() {
         WebElement productPrice = productPrices.get(2);
@@ -50,18 +45,22 @@ public class ProductPage {
     }
 
     public void buyProduct() {
-        commonActions.scrollToElement(buyButton);
-        commonActions.clickElement(buyButton, "Buy Product Button");
+        WebElement buyElement = commonActions.getFirstVisibleElement(buyButton, "Buy Product Button");
+        commonActions.clickElement(buyElement, "Buy Product Button");
         commonActions.waitForPageLoad();
     }
     public void addToCart() {
-        commonActions.clickElement(addToCartButton, "Add to Cart Button");
+        commonActions.clickElement(addToCartButton.get(1), "Add to Cart Button");
+    }
+
+    public boolean isBuyButtonEnabled() {
+        WebElement buyElement = commonActions.getFirstVisibleElement(buyButton, "Buy Button");
+        return buyElement != null  && commonActions.isElementEnabled(buyElement);
     }
 
     public String getProductTitle() {
         WebElement element = commonActions.getFirstVisibleElement(productTitle, "Titulo del producto");
         return element != null ? commonActions.getTextFromElement(element) : "";
     }
-
 
     }

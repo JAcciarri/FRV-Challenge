@@ -38,7 +38,11 @@ public class CommonActions {
 
     public void waitForElementDisplayed(WebElement element) {
         try {
-           wait.until(ExpectedConditions.visibilityOf(element)).isDisplayed();
+           wait.until(ExpectedConditions.visibilityOf(element));
+           if( !element.isDisplayed() ) {
+               logger.info("Element is not displayed: " + element.toString());
+           }
+
         } catch (TimeoutException e) {
             logger.info("Element not displayed within the timeout period: " + element.toString());
         }
@@ -103,22 +107,43 @@ public class CommonActions {
     Asi que decidi hacer este workaround para ayudar a los page object classes a obtener el primer elemento visible
     */
     public WebElement getFirstVisibleElement(List<WebElement> elements, String context) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         try {
-            for (WebElement element : elements) {
+            wait.until(driver -> !elements.isEmpty()); // espera que la lista no esté vacía
+        } catch (Exception e) {
+            logger.warn("Timeout esperando que {} tenga al menos un elemento.", context);
+            return null;
+        }
+
+        for (WebElement element : elements) {
+            try {
+                scrollToElement(element);
                 wait.until(ExpectedConditions.visibilityOf(element));
                 if (element.isDisplayed()) {
                     logger.info("Elemento visible encontrado para {}: {}", context, element);
                     return element;
                 }
+            } catch (Exception e) {
+                logger.debug("Elemento no visible para {}: {}", context, element);
             }
-        } catch (Exception e) {
-            logger.warn("Excepcion durante la búsqueda del elemento visible para {}: {}", context, e.getMessage());
         }
 
-        logger.warn("No se encontro ningún elemento visible para {}", context);
+        logger.warn("No se encontró ningún elemento visible para {}", context);
         return null;
     }
 
+    public List<WebElement> findElements(String selector) {
+        try {
+            if(selector.startsWith("//")) {
+                return driver.findElements(By.xpath(selector));
+            } else {
+                return driver.findElements(By.cssSelector(selector));
+            }
+        } catch (NoSuchElementException e) {
+            logger.warn("No se encontraron elementos con el selector: {}", selector);
+            return List.of();
+        }
+    }
 
 
 

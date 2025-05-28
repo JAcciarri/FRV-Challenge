@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
+import pages.CheckoutPage;
 import pages.FravegaMainPage;
 import pages.ProductPage;
 import pages.ProductsSearchedPage;
@@ -28,6 +29,7 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
                 ProductsSearchedPage productsSearchedPage = new ProductsSearchedPage(driver);
                 SoftAssert softAssert = new SoftAssert();
                 ProductPage productPage = new ProductPage(driver);
+                CheckoutPage checkoutPage = new CheckoutPage(driver);
 
                 logger.info("Iniciando el test de caso de uso heladera");
 
@@ -55,7 +57,6 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
 
                         // Ahora vamos a hacer click en el segundo producto de la lista y verificar
                         productsSearchedPage.selectProduct(products.get(INDEX_DESIRED_PRODUCT));
-                        productPage.waitForProductPageToLoad();
 
                         softAssert.assertEquals(productPage.getProductTitle(), productTitle,
                                 "El título del producto no coincide con el esperado.");
@@ -64,24 +65,30 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
                         softAssert.assertEquals(productPage.getProductOriginalPrice(), originalPrice,
                                 "El precio original del producto no coincide con el esperado.");
 
-                        // SE ASUME QUE SI EL BOTON DE COMPRAR Y AGREGAR AL CARRITO ESTAN VISIBLE Y ENABLED, EL PRODUCTO ESTA DISPONIBLE
-                        if(commonActions.isElementDisplayed(productPage.addToCartButton) &&
-                                commonActions.isElementEnabled(productPage.addToCartButton)) {
-                                logger.info("El botón de añadir al carrito ahora está visible y habilitado.");
+                        // SE ASUME QUE SI EL BOTON DE COMPRAR ESTA VISIBLE Y ENABLED, EL PRODUCTO ESTA DISPONIBLE
+                        if(productPage.isBuyButtonEnabled()) {
+                                logger.info("El botón de comprar ahora está visible y habilitado.");
                         } else {
-                                softAssert.fail("El botón de añadir al carrito no está visible o habilitado.");
+                                softAssert.fail("El botón de comprar no está visible o habilitado.");
                         }
 
-
                         productPage.buyProduct();
+                        checkoutPage.waitForCheckoutPageToLoad();
+                        final int EXPECTED_AMOUNT_OF_PRODUCTS = 1; // Verificar que solo se agrega un producto al checkout
+                        softAssert.assertTrue(commonActions.isElementDisplayed(checkoutPage.checkoutTitle),
+                                "El título de la página de checkout no está visible.");
+                        softAssert.assertEquals(checkoutPage.getProductTitleInCheckout(), productTitle,
+                                "El título del producto en la página de checkout no coincide con el esperado.");
+                        softAssert.assertEquals(checkoutPage.getTotalPriceInCheckout(), discountedPrice,
+                                "El precio del producto en la página de checkout no coincide con el esperado.");
+                        softAssert.assertEquals(checkoutPage.getAmountOfProductsInCheckout(), String.valueOf(EXPECTED_AMOUNT_OF_PRODUCTS),
+                                "La cantidad de productos en el checkout no coincide con la esperada.");
 
-
-                        // Despues de aca pasar a la pagina de carrito y checkout y agregar mas verificaciones
+                        logger.info("El producto se ha agregado correctamente al carrito de compras.");
 
 
                 } catch (Exception e) {
-                        logger.error("Error al abrir la pagina principal: " + e.getMessage());
-                        logger.error("Estado del test: Falló al intentar realizar la búsqueda de productos.");
+                        logger.error("Estado del test: Falló. {}", e.getMessage());
                 } finally {
                         driver.quit();
                 }
