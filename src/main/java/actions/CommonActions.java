@@ -8,6 +8,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import utils.LoggerUtil;
 
 import java.time.Duration;
 
@@ -16,6 +18,7 @@ public class CommonActions {
     private final WebDriver driver;
     private final static int MAX_TIMEOUT = 5;
     private final FluentWait<WebDriver> wait;
+    private static final Logger logger = LoggerUtil.getLogger(CommonActions.class);
 
     public CommonActions(WebDriver driver) {
         this.driver = driver;
@@ -37,7 +40,7 @@ public class CommonActions {
         try {
             isDisplayed = wait.until(ExpectedConditions.visibilityOf(element)).isDisplayed();
         } catch (TimeoutException e) {
-            System.out.println("Element not displayed within the timeout period: " + element.toString());
+            logger.info("Element not displayed within the timeout period: " + element.toString());
             return false;
         }
         return isDisplayed;
@@ -47,20 +50,20 @@ public class CommonActions {
         waitForElementDisplayed(element);
         String elementDescription = element.getAttribute("data-test-id");
         elementDescription = (elementDescription != null && !elementDescription.isEmpty()) ? elementDescription : element.toString();
-        System.out.println("Clicking on element: " + elementDescription);
+        logger.info("Clicking on element: " + elementDescription);
         element.click();
     }
 
     public void clickElement(WebElement element, String description) {
         waitForElementDisplayed(element);
-        System.out.println("Clicking on element: " + description);
+        logger.info("Clicking on element: " + description);
         element.click();
     }
 
     public void typeText(WebElement element, String text) {
         waitForElementDisplayed(element);
         element.clear();
-        System.out.println("Typing text: " + text);
+        logger.info("Typing text: " + text);
         element.sendKeys(text);
     }
 
@@ -75,7 +78,7 @@ public class CommonActions {
         if(text == null || text.isEmpty()) {
             text = element.getAttribute("value");
         }
-        System.out.println("Getting text from element: " + text);
+        logger.info("Getting text from element: " + text);
         return text;
     }
 

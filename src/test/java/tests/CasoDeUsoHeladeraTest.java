@@ -4,14 +4,18 @@ import actions.CommonActions;
 import base.ApplicationBaseTest;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
 import org.testng.annotations.Test;
 import pages.FravegaMainPage;
 import pages.ProductPage;
 import pages.ProductsSearchedPage;
+import utils.LoggerUtil;
 
 import java.util.List;
 
 public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
+
+        private static final Logger logger = LoggerUtil.getLogger(CasoDeUsoHeladeraTest.class);
 
         @Test
         public void verificarCasoDeUsoHeladera(){
@@ -29,20 +33,18 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
                         // El metodo getProductsList en si ya tiene un wait que espera a el contenedor de productos
                         List<WebElement> products = productsSearchedPage.getProductsList();
                         if (products.isEmpty()) {
-                                System.out.println("No se encontraron productos para la búsqueda.");
+                                logger.info("No se encontraron productos para la búsqueda.");
                                 return; // Salimos del test si no hay productos
                         }
 
-                        System.out.println("Cantidad de productos encontrados: " + products.size());
+                        logger.info("Cantidad de productos encontrados: " + products.size());
 
                         String originalPrice = productsSearchedPage.getProductOriginalPriceByIndex(1);
                         String discountedPrice = productsSearchedPage.getProductDiscountedPriceByIndex(1);
                         String productTitle = productsSearchedPage.getProductTitleByIndex(1);
-                        System.out.println("Titulo del segundo producto: " + productTitle);
-                        System.out.println("Precio original del segundo producto: " + originalPrice);
-                        System.out.println("Precio con descuento del segundo producto: " + discountedPrice);
-
-                        // TODO : IMPLEMENTAR UN LOGGER, NO USAR SYSTEM.OUT.PRINTLN
+                        logger.info("Titulo del segundo producto: " + productTitle);
+                        logger.info("Precio original del segundo producto: " + originalPrice);
+                        logger.info("Precio con descuento del segundo producto: " + discountedPrice);
 
                         // Ahora vamos a hacer click en el segundo producto de la lista y verificar todo
                         productsSearchedPage.selectProduct(products.get(1)); // click en el segundo producto de la lista
@@ -58,7 +60,8 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
 
 
                 } catch (Exception e) {
-                        System.out.println("Error al abrir la pagina principal: " + e.getMessage());
+                        logger.error("Error al abrir la pagina principal: " + e.getMessage());
+                        logger.error("Estado del test: Falló al intentar realizar la búsqueda de productos.");
                 } finally {
                         driver.quit();
                 }
