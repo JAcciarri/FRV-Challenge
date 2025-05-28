@@ -5,12 +5,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.slf4j.Logger;
+import utils.LoggerUtil;
 
 import java.util.List;
 
 public class ProductPage {
 
     CommonActions commonActions;
+    private static final Logger logger = LoggerUtil.getLogger(ProductPage.class);
 
     public ProductPage(WebDriver driver) {
         this.commonActions = new CommonActions(driver);
