@@ -13,12 +13,6 @@ public class LoggerUtil {
         return LoggerFactory.getLogger(clazz.getName());
     }
 
-    public static void printAPIResponse(Logger logger, String responseBody) {
-        if (logger.isInfoEnabled()) {
-            logger.info("API Response: {}", responseBody);
-        }
-    }
-
     public static void printAPIListResponse(List<Map<String, Object>> mapList, Logger logger) {
         if (logger.isInfoEnabled()) {
             for(Map<String, Object> entity : mapList){
