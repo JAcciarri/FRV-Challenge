@@ -1,14 +1,12 @@
-package pages;
+package fravega.pages;
 
 import actions.CommonActions;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import utils.LoggerUtil;
-
 import java.util.List;
 
 public class ProductPage {
@@ -31,8 +29,8 @@ public class ProductPage {
     public List<WebElement> addToCartButton;
     @FindBy(css = "[data-test-id='carousel-product']")
     public List<WebElement> productCarousel;
-
-
+    @FindBy(css = "[data-test-id='button-open-modal-payment']")
+    public List<WebElement> openPaymentModalButton;
 
 
     public String getProductOriginalPrice() {
@@ -63,4 +61,14 @@ public class ProductPage {
         return element != null ? commonActions.getTextFromElement(element) : "";
     }
 
+    public void openPaymentModal() {
+        WebElement paymentModalButton = commonActions.getFirstVisibleElement(openPaymentModalButton, "Open Payment Modal Button");
+        if (paymentModalButton != null) {
+            commonActions.clickElement(paymentModalButton, "Open Payment Modal Button");
+            commonActions.waitForPageLoad();
+        } else {
+            logger.warn("Payment modal button is not visible or not found.");
+        }
     }
+
+}

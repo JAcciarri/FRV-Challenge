@@ -1,4 +1,4 @@
-package pages;
+package fravega.pages;
 
 import actions.CommonActions;
 import org.openqa.selenium.By;

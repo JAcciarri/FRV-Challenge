@@ -1,4 +1,4 @@
-package base;
+package fravega.base;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;

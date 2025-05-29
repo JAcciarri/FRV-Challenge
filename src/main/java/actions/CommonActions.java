@@ -1,10 +1,7 @@
 package actions;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 import org.slf4j.Logger;
 import utils.LoggerUtil;
 
@@ -143,6 +140,17 @@ public class CommonActions {
             logger.warn("No se encontraron elementos con el selector: {}", selector);
             return List.of();
         }
+    }
+
+    public void waitForDropdownOptionsToLoad(WebElement dropdown) {
+        waitForDropdownOptionsToLoad(dropdown, 1);
+    }
+
+    public void waitForDropdownOptionsToLoad(WebElement dropdown, int expectedMinOptions) {
+        new WebDriverWait(driver, Duration.ofSeconds(5)).until(driver -> {
+            Select select = new Select(dropdown);
+            return select.getOptions().size() >= expectedMinOptions;
+        });
     }
 
 

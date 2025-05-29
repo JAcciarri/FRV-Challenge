@@ -1,4 +1,4 @@
-package pages;
+package fravega.pages;
 
 import actions.CommonActions;
 import org.openqa.selenium.WebDriver;
@@ -6,7 +6,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
-import tests.CasoDeUsoHeladeraTest;
 import utils.LoggerUtil;
 
 public class FravegaMainPage {
