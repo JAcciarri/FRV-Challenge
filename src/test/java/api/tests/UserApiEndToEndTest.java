@@ -9,8 +9,6 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import utils.LoggerUtil;
 
-import java.util.Map;
-
 public class UserApiEndToEndTest {
 
     private final Logger logger = LoggerUtil.getLogger(UserApiEndToEndTest.class);

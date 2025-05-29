@@ -1,6 +1,4 @@
 package api.tests;
-
-import api.dataprovider.UserDataProvider;
 import api.models.UserModel;
 import api.services.UserApiService;
 import io.restassured.response.Response;
