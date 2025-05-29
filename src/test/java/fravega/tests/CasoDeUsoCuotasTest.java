@@ -4,6 +4,7 @@ import actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
 import fravega.enums.TarjetaDeCredito;
 import fravega.pages.*;
+import fravega.pojo.CuotaInfo;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.testng.asserts.SoftAssert;
 import utils.LoggerUtil;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
     private static final Logger logger = LoggerUtil.getLogger(CasoDeUsoCuotasTest.class);
@@ -40,16 +43,27 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
             productsSearchedPage.selectProduct(products.get(0));
             productPage.openPaymentModal();
             cuotasModalPage.openAllPaymentMethodsTab();
-            logger.info("Seleccionando tarjeta american express e iterando sobre bancos disponibles");
-            cuotasModalPage.selectCardByEnum(TarjetaDeCredito.AMEX);
-            cuotasModalPage.iterateOverAllBanksForCreditCard();
+
             logger.info("Seleccionando tarjeta visa e iterando sobre bancos disponibles");
             cuotasModalPage.selectCardByEnum(TarjetaDeCredito.VISA);
-            cuotasModalPage.iterateOverAllBanksForCreditCard();
+            Map<String, List<CuotaInfo>> results = cuotasModalPage.getAllCuotasForAllBanksForCreditCard();
+
+            logger.info("Resultados obtenidos: {}", results);
+
+            results.forEach((bank, cuotas) -> {
+                Optional<CuotaInfo> tresCuotas = cuotas.stream()
+                        .filter(c -> c.getCuotas().contains("3"))
+                        .findFirst();
+                softAssert.assertTrue(tresCuotas.isPresent(), "No se encontraron cuotas de 3 para el banco " + bank);
+                softAssert.assertTrue(tresCuotas.get().hasNoInterests(),
+                        "La opción de 3 cuotas tiene interés: " + tresCuotas.get().getInterest() + " para el banco " + bank);
+            });
+
 
 
         } catch (Exception e) {
             logger.error("Estado del test: Falló. {}", e.getMessage());
+            softAssert.fail(e.getMessage());
         } finally {
 
         }
