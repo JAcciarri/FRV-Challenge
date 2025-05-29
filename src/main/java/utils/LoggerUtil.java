@@ -22,4 +22,12 @@ public class LoggerUtil {
         }
     }
 
+
+    public static <K, V> void logSimpleJSONUser(Map<K, V> map, Logger logger){
+        logger.info("___________________________");
+        map.forEach(
+                (key, value) -> logger.info("User {}: {}", key, value)
+        );
+    }
+
 }

@@ -1,5 +1,6 @@
 package api.tests;
 
+import api.dataprovider.UserDataProvider;
 import api.models.UserModel;
 import api.services.UserApiService;
 import io.restassured.response.Response;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 public class UserApiTest {
 
-    Logger logger = LoggerUtil.getLogger(UserApiTest.class);
+    private final Logger logger = LoggerUtil.getLogger(UserApiTest.class);
 
     // Podria implementar un data provider para pasar los datos de los usuarios
     @Test
@@ -32,7 +33,7 @@ public class UserApiTest {
         sAssert.assertTrue(userDetail.getBody().asString().contains("email"), "Response body does not contain user email");
         // Listar el detalle especifico del usuario
         logger.info("User details in JSON: {}", userDetail.getBody().asString());
-        logSimpleJSONUser(userDetail);
+        LoggerUtil.logSimpleJSONUser(userDetail.jsonPath().getMap(""), logger);
         sAssert.assertAll();
 
     }
@@ -51,7 +52,7 @@ public class UserApiTest {
     }
 
     @Test
-    public void createUser() {
+    public void testCreateUser() {
         SoftAssert sAssert = new SoftAssert();
         UserApiService userService = new UserApiService();
 
@@ -71,16 +72,11 @@ public class UserApiTest {
         sAssert.assertEquals(response.jsonPath().getString("status"), newUser.getStatus(), "Status mismatch");
 
         logger.info("Usuario creado exitosamente con ID: {}", createdUserId);
-        logSimpleJSONUser(response);
+        LoggerUtil.logSimpleJSONUser(response.jsonPath().getMap(""), logger);
 
         sAssert.assertAll();
     }
 
-    private void logSimpleJSONUser(Response res){
-        res.jsonPath().getMap("").forEach(
-                (key, value) -> logger.info("User {}: {}", key, value)
-        );
-    }
 
 
 }
