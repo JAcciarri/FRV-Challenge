@@ -2,10 +2,8 @@ package fravega.tests;
 
 import actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
-import fravega.pages.CheckoutPage;
-import fravega.pages.FravegaMainPage;
-import fravega.pages.ProductPage;
-import fravega.pages.ProductsSearchedPage;
+import fravega.enums.TarjetaDeCredito;
+import fravega.pages.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -25,6 +23,7 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
         CommonActions commonActions = new CommonActions(driver);
         FravegaMainPage fravegaMainPage = new FravegaMainPage(driver);
         ProductsSearchedPage productsSearchedPage = new ProductsSearchedPage(driver);
+        CuotasModalPage cuotasModalPage = new CuotasModalPage(driver);
         SoftAssert softAssert = new SoftAssert();
         ProductPage productPage = new ProductPage(driver);
 
@@ -34,8 +33,19 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
             fravegaMainPage.openFravegaCuotasPage();
             commonActions.waitForElementDisplayed(fravegaMainPage.inputSearchProduct);
             List<WebElement> products = productsSearchedPage.getProductsList();
-            // Ahora voy a filtrar segun el test verifique por 3, 6 o 12 cuotas
-
+            if(products.isEmpty()){
+                Assert.fail("No se encontraron productos en la búsqueda");
+            }
+            // Aca puedo filtrar los productos segun el test verifique por 3, 6 o 12 cuotas con el enum que cree
+            productsSearchedPage.selectProduct(products.get(0));
+            productPage.openPaymentModal();
+            cuotasModalPage.openAllPaymentMethodsTab();
+            logger.info("Seleccionando tarjeta american express e iterando sobre bancos disponibles");
+            cuotasModalPage.selectCardByEnum(TarjetaDeCredito.AMEX);
+            cuotasModalPage.iterateOverAllBanksForCreditCard();
+            logger.info("Seleccionando tarjeta visa e iterando sobre bancos disponibles");
+            cuotasModalPage.selectCardByEnum(TarjetaDeCredito.VISA);
+            cuotasModalPage.iterateOverAllBanksForCreditCard();
 
 
         } catch (Exception e) {

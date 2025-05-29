@@ -37,6 +37,9 @@ public class FravegaMainPage {
     public void openFravegaCuotasPage() {
         commonActions.openPage(URL_DE_CUOTAS);
         commonActions.waitForPageLoad();
+        if (commonActions.isElementDisplayed(modalPostalCode)) {
+            commonActions.clickElement(modalPostalCodeCloseButton);
+        }
     }
 
     public void openMainPageAndHandleModal() {
