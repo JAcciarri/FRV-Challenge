@@ -19,4 +19,13 @@ public class UserDataProvider {
     private static String generateEmail() {
         return "Usuario" + System.currentTimeMillis() + Math.random() + "@mail.com";
     }
+
+    public static UserModel generateRandomUser() {
+        final long timestamp = System.currentTimeMillis();
+        String name = "QA_user" + "_" + timestamp;
+        String email = "user" + timestamp + "@mail.com";
+        String gender = Math.random() > 0.5 ? "male" : "female";
+        String status = Math.random() > 0.5 ? "active" : "inactive";
+        return new UserModel(name, email, gender, status);
+    }
 }

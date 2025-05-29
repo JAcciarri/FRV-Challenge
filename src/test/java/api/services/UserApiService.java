@@ -19,7 +19,7 @@ public class UserApiService {
     public Response getUsers() {
         return RestAssured
                 .given()
-                .get("/users");
+                .get("/users?per_page=100");
     }
     public Response getUserById(int userId) {
         return RestAssured
