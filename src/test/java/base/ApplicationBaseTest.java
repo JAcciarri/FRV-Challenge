@@ -17,7 +17,7 @@ public class ApplicationBaseTest {
     }
 
 
-    @BeforeMethod(alwaysRun = true)
+    @BeforeTest(alwaysRun = true)
     public void setUp(ITestContext context) {
         String browser = context.getCurrentXmlTest().getParameter("browser");
         if (browser == null || browser.isEmpty()) {
@@ -26,9 +26,17 @@ public class ApplicationBaseTest {
          driver = WebDriverFactory.createDriver(browser);
     }
 
-    @AfterMethod
+    @AfterTest
     public void tearDown() {
-        driver.quit();
+        if(driver != null) {
+            driver.close();
+        }
+    }
+    @AfterSuite
+    public void afterClass() {
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
 

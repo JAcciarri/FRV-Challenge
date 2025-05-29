@@ -2,9 +2,11 @@ package tests;
 
 import actions.CommonActions;
 import base.ApplicationBaseTest;
+import org.checkerframework.checker.units.qual.A;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
+import org.testng.Assert;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -20,7 +22,7 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
 
         private static final Logger logger = LoggerUtil.getLogger(CasoDeUsoHeladeraTest.class);
 
-        @Parameters({"keywordSearch"})
+        @Parameters({"inputDataSearch"})
         @Test
         public void verificarCasoDeUsoHeladera(String inputDataSearch) {
                 WebDriver driver = getDriver();
@@ -42,9 +44,11 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
                         commonActions.waitForPageLoad();
                         List<WebElement> products = productsSearchedPage.getProductsList();
                         final int INDEX_DESIRED_PRODUCT = 1; // Segundo producto de la lista
-                        if (products.isEmpty()) {
-                                softAssert.fail("No se encontraron productos para esa busqueda"); // Salimos del test si no hay productos
-                        }
+
+                        /* Hacemos un hard assert para asegurarnos de que la lista de productos no esté vacía,
+                        * ya que si lo está, no podemos continuar con el test.
+                        */
+                        Assert.assertFalse(products.isEmpty(), "No se encontraron productos para esa búsqueda");
 
                         logger.info("Cantidad de productos encontrados: " + products.size());
 
@@ -84,17 +88,13 @@ public class CasoDeUsoHeladeraTest extends ApplicationBaseTest {
                         softAssert.assertEquals(checkoutPage.getAmountOfProductsInCheckout(), String.valueOf(EXPECTED_AMOUNT_OF_PRODUCTS),
                                 "La cantidad de productos en el checkout no coincide con la esperada.");
 
-                        logger.info("El producto se ha agregado correctamente al carrito de compras.");
-
 
                 } catch (Exception e) {
                         logger.error("Estado del test: Falló. {}", e.getMessage());
                 } finally {
-                        driver.quit();
+                     // Driver quit fue movido a @AfterMethod en ApplicationBaseTest
                 }
 
                 softAssert.assertAll();
-
-
         }
 }

@@ -2,9 +2,9 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="TestSuite" parallel="tests" thread-count="3">
 
-    <test name="Caso de Uso 1 Buscar Heladera - Busqueda de Heladera Samsung">
+    <test name="Caso de Uso 1 - Busqueda de Heladera Samsung">
         <parameter name="browser" value="chrome"/>
-        <parameter name="keywordSearch" value="Heladera Samsung"/>
+        <parameter name="inputDataSearch" value="Heladera Samsung"/>
         <classes>
             <class name="tests.CasoDeUsoHeladeraTest">
                 <methods>
@@ -13,9 +13,9 @@
             </class>
         </classes>
     </test>
-    <!--  <test name="Caso de Uso 1 Buscar Heladera - Busqueda sin resultados">
+    <test name="Caso de Uso 1 - Busqueda sin resultados">
             <parameter name="browser" value="chrome"/>
-            <parameter name="keywordSearch" value="qwdjkqwdjklqklwjdkqwdkjqwdjklqwdjklqwjkdjkwdjkwjkqdhjkw123"/>
+            <parameter name="inputDataSearch" value="asd!?123YXZ#$"/>
             <classes>
                 <class name="tests.CasoDeUsoHeladeraTest">
                     <methods>
@@ -24,7 +24,5 @@
                 </class>
             </classes>
         </test>
-     !-->
-
     </suite>
 

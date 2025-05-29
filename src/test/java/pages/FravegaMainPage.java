@@ -43,7 +43,7 @@ public class FravegaMainPage {
 
     public void searchProduct(String product) {
         commonActions.typeText(inputSearchProduct, product);
-        commonActions.clickElement(searchProductsButton);
+        commonActions.clickElement(searchProductsButton, "Buscar productos");
         commonActions.waitForPageLoad();
     }
 

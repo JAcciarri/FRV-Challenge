@@ -40,11 +40,11 @@ public class CommonActions {
         try {
            wait.until(ExpectedConditions.visibilityOf(element));
            if( !element.isDisplayed() ) {
-               logger.info("Element is not displayed: " + element.toString());
+               logger.info("Element is not displayed: {}", element.toString());
            }
 
         } catch (TimeoutException e) {
-            logger.info("Element not displayed within the timeout period: " + element.toString());
+            logger.warn("Element not displayed within the timeout period: {}", element.toString());
         }
     }
 
@@ -69,8 +69,9 @@ public class CommonActions {
     }
 
     public void scrollToElement(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
-        waitForElementDisplayed(element);
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", element
+        );
     }
 
     public String getTextFromElement(WebElement element) {
@@ -79,7 +80,6 @@ public class CommonActions {
         if(text == null || text.isEmpty()) {
             text = element.getAttribute("value");
         }
-        logger.info("Getting text from element: {}", text);
         return text;
     }
 
