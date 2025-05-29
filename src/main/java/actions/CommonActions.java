@@ -56,6 +56,7 @@ public class CommonActions {
                 : description;
         try {
             element.click();
+            logger.info("Clicked on element: {}", desc);
         } catch (StaleElementReferenceException e) {
             logger.warn("Elemento obsoleto al intentar hacer click en {}. Reintentando.", desc);
             waitForElementDisplayed(element);

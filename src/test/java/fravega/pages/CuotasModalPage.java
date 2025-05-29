@@ -2,6 +2,8 @@ package fravega.pages;
 
 import actions.CommonActions;
 import fravega.enums.TarjetaDeCredito;
+import fravega.pojo.CuotaConstants;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -40,9 +42,6 @@ public class CuotasModalPage {
     @FindBy(xpath = "//div[@data-test-id='payment-method']/figure/img")
     public WebElement currentSelectedCard;
 
-    public static final String DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD = "//div[@class='detail']";
-    public static final String DYNAMIC_SELECT_BANK = "//h3[text()='Banco']";
-
     public void openAllPaymentMethodsTab() {
         commonActions.waitForElementDisplayed(cuotasModalOverlay);
         WebElement paymentsTab = allPaymentMethodsTab.get(1);
@@ -72,20 +71,41 @@ public class CuotasModalPage {
         List<WebElement> banks;
 
         while (true) {
-            WebElement selectBankDynamic = commonActions.findElement(DYNAMIC_SELECT_BANK);
-            commonActions.clickElement(selectBankDynamic, "Seleccionar banco");
-            commonActions.waitForElementsToAppear(DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD, Duration.ofSeconds(5));
-            banks = commonActions.findElements(DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD);
+            WebElement selectBankDynamic = commonActions.findElement(CuotaConstants.DYNAMIC_SELECT_BANK);
+            commonActions.clickElement(selectBankDynamic, "Abrir dropdown bancos");
+            commonActions.waitForElementsToAppear(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD, Duration.ofSeconds(5));
+            banks = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD);
 
             if (index >= banks.size()) {
                 break; // salimos cuando ya no quedan más bancos por iterar
             }
 
             WebElement currentBank = banks.get(index);
+            String currentBankName = currentBank.findElement(By.xpath(".//p")).getText();
             commonActions.scrollToElement(currentBank);
-            commonActions.clickElement(currentBank, "Banco: " + currentBank.getText());
+            commonActions.clickElement(currentBank, "Banco: " + currentBankName);
             commonActions.waitForPageLoad();
+            logger.info("________________________");
+            logger.info("Pagos para el banco: {}", currentBankName);
+            iterateOverAllPaymentsForBank();
+            logger.info("________________________");
+
             index++;
+        }
+    }
+
+    /**
+     * Itera sobre todos los pagos disponibles para el banco seleccionado.
+     * Extrae y muestra la información de cuotas, precio total financiado e intereses.
+     */
+    public void iterateOverAllPaymentsForBank(){
+        commonActions.waitForElementsToAppear(CuotaConstants.DYNAMIC_ALL_PAYMENTS, Duration.ofSeconds(5));
+        List<WebElement> payments = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_PAYMENTS);
+        for (WebElement payment : payments) {
+            String cuota = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_CUOTAS)).getText();
+            String totalPrice = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_TOTAL_FINANCED)).getText();
+            String interests = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_INTEREST)).getText();
+            logger.info("Cuotas: {}, Precio Total financiado: {}, Intereses: {}", cuota, totalPrice, interests);
         }
     }
 
