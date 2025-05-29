@@ -12,6 +12,8 @@ public class FravegaMainPage {
 
     CommonActions commonActions;
     private final static String URL = "https://www.fravega.com/";
+    private static final String URL_DE_CUOTAS = "https://www.fravega.com/l/?formas-de-pago=12-cuotas-sin-interes%2C9-cuotas-sin-interes%2C3-cuotas-sin-interes%2C6-cuotas-sin-interes";
+
     private static final Logger logger = LoggerUtil.getLogger(FravegaMainPage.class);
 
     public FravegaMainPage(WebDriver driver) {
@@ -31,6 +33,10 @@ public class FravegaMainPage {
 
     public void openFravegaMainPage() {
         commonActions.openPage(URL);
+    }
+    public void openFravegaCuotasPage() {
+        commonActions.openPage(URL_DE_CUOTAS);
+        commonActions.waitForPageLoad();
     }
 
     public void openMainPageAndHandleModal() {
