@@ -35,23 +35,20 @@ public class UserApiEndToEndTest {
         sAssert.assertAll();
     }
 
-    @Test
+
+    @Test()
     public void testEndToEndUserFlow() throws InterruptedException {
         SoftAssert sAssert = new SoftAssert();
-        UserApiService service = new UserApiService();
+        UserApiService userService = new UserApiService();
 
-        // Crear usuario
         UserModel randomUser = UserDataProvider.generateRandomUser();
-        Response responseCreation = service.createUser(randomUser);
+        Response responseCreation = userService.createUser(randomUser);
         sAssert.assertEquals(responseCreation.statusCode(), 201);
         logger.info("Usuario creado: {}", responseCreation.asString());
-
-        int userId = responseCreation.getBody().jsonPath().get("id");
-        Assert.assertNotNull(userId, "El ID del usuario creado es nulo");
-        logger.info(String.valueOf(userId));
+        final int USER_ID = responseCreation.getBody().jsonPath().get("id");
 
         // Consultar por ID
-        Response fetch =  service.getUserById(userId);
+        Response fetch =  userService.getUserByIdWithAuth(USER_ID);
         logger.info(fetch.asString());
         sAssert.assertEquals(fetch.statusCode(), 200, "Status code is not 200 while fetching user by ID");
 
@@ -62,12 +59,12 @@ public class UserApiEndToEndTest {
         sAssert.assertEquals(data.get("status"), randomUser.getStatus());
 
         // Ahora verificamos que el usuario creado esta contenido en la lista de usuarios
-        Response allUsersResponse = service.getUsers();
+        Response allUsersResponse = userService.getUsersWithAuth();
         sAssert.assertEquals(allUsersResponse.statusCode(), 200, "Status code is not 200 while getting all users");
 
         List<Map<String, Object>> allUsers = allUsersResponse.jsonPath().getList("");
         boolean userFound = allUsers.stream()
-                .anyMatch(user -> randomUser.getEmail().equals(user.get("email")));
+                .anyMatch(u -> randomUser.getEmail().equals(u.get("email")));
 
         if(userFound) logger.info("Se encontro el usuario en la lista completa de usuarios");
         sAssert.assertTrue(userFound, "El Usuario creado no se encuentra en la lista de usuarios");

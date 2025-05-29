@@ -19,11 +19,23 @@ public class UserApiService {
     public Response getUsers() {
         return RestAssured
                 .given()
+                .get("/users");
+    }
+    public Response getUsersWithAuth() {
+        return RestAssured
+                .given()
+                .header("Authorization", TOKEN)
                 .get("/users?per_page=100");
     }
     public Response getUserById(int userId) {
         return RestAssured
                 .given()
+                .get("/users/" + userId);
+    }
+    public Response getUserByIdWithAuth(int userId) {
+        return RestAssured
+                .given()
+                .header("Authorization", TOKEN)
                 .get("/users/" + userId);
     }
 
