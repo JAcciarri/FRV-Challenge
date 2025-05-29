@@ -3,6 +3,7 @@ package fravega.pages;
 import actions.CommonActions;
 import fravega.enums.TarjetaDeCredito;
 import fravega.pojo.CuotaConstants;
+import fravega.pojo.CuotaInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,8 +15,7 @@ import org.slf4j.Logger;
 import utils.LoggerUtil;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class CuotasModalPage {
 
@@ -65,16 +65,16 @@ public class CuotasModalPage {
         }
     }
 
-    public void iterateOverAllBanksForCreditCard() {
-        commonActions.waitForElementDisplayed(selectBank);
+    public Map<String, List<CuotaInfo>> getAllCuotasForAllBanksForCreditCard() {
         int index = 0;
-        List<WebElement> banks;
+        Map<String, List<CuotaInfo>> cuotasPerBank = new HashMap<String, List<CuotaInfo>>();
 
+        commonActions.waitForElementDisplayed(selectBank);
         while (true) {
             WebElement selectBankDynamic = commonActions.findElement(CuotaConstants.DYNAMIC_SELECT_BANK);
             commonActions.clickElement(selectBankDynamic, "Abrir dropdown bancos");
             commonActions.waitForElementsToAppear(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD, Duration.ofSeconds(5));
-            banks = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD);
+            List<WebElement> banks = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD);
 
             if (index >= banks.size()) {
                 break; // salimos cuando ya no quedan más bancos por iterar
@@ -82,31 +82,34 @@ public class CuotasModalPage {
 
             WebElement currentBank = banks.get(index);
             String currentBankName = currentBank.findElement(By.xpath(".//p")).getText();
+
             commonActions.scrollToElement(currentBank);
             commonActions.clickElement(currentBank, "Banco: " + currentBankName);
             commonActions.waitForPageLoad();
-            logger.info("________________________");
-            logger.info("Pagos para el banco: {}", currentBankName);
-            iterateOverAllPaymentsForBank();
-            logger.info("________________________");
+            List<CuotaInfo> cuotas = getCuotasForSelectedBank();
+            cuotasPerBank.put(currentBankName, cuotas);
 
             index++;
         }
+        return cuotasPerBank;
     }
 
     /**
      * Itera sobre todos los pagos disponibles para el banco seleccionado.
-     * Extrae y muestra la información de cuotas, precio total financiado e intereses.
+     * Extrae y deuelve la información de cuotas, precio total financiado e intereses.
      */
-    public void iterateOverAllPaymentsForBank(){
+    public List<CuotaInfo> getCuotasForSelectedBank(){
         commonActions.waitForElementsToAppear(CuotaConstants.DYNAMIC_ALL_PAYMENTS, Duration.ofSeconds(5));
         List<WebElement> payments = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_PAYMENTS);
+        List<CuotaInfo> cuotas = new ArrayList<>();
         for (WebElement payment : payments) {
             String cuota = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_CUOTAS)).getText();
             String totalPrice = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_TOTAL_FINANCED)).getText();
             String interests = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_INTEREST)).getText();
+            cuotas.add(new CuotaInfo(cuota, totalPrice, interests));
             logger.info("Cuotas: {}, Precio Total financiado: {}, Intereses: {}", cuota, totalPrice, interests);
         }
+        return cuotas;
     }
 
 
