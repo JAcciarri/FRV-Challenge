@@ -7,6 +7,9 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import utils.LoggerUtil;
 
+import java.util.List;
+import java.util.Map;
+
 
 public class UserApiTest {
 
@@ -43,9 +46,9 @@ public class UserApiTest {
         sAssert.assertTrue(response.getBody().asString().contains("id"), "Response body does not contain any user id");
         sAssert.assertTrue(response.getBody().asString().contains("name"), "Response body does not contain any user name");
         sAssert.assertTrue(response.getBody().asString().contains("email"), "Response body does not contain any user email");
-
+        List<Map<String, Object>> users = response.jsonPath().getList("");
+        LoggerUtil.printAPIListResponse(users, logger);
         sAssert.assertAll();
-
     }
 
 }
