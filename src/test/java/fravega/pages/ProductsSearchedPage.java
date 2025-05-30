@@ -1,13 +1,13 @@
-package pages;
+package fravega.pages;
 
-import actions.CommonActions;
+import fravega.actions.CommonActions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 import java.util.List;
 
@@ -33,9 +33,32 @@ public class ProductsSearchedPage {
     }
 
     public void selectProduct(WebElement product) {
-        WebElement clickableProduct = product.findElement(By.xpath(".//a"));
-        commonActions.clickElement(clickableProduct, "Link del producto");
-        commonActions.waitForPageLoad();
+        try {
+            WebElement clickableProduct = product.findElement(By.xpath(".//a"));
+            commonActions.clickElement(clickableProduct, "Link del producto");
+            commonActions.waitForPageLoad();
+            logger.info("Producto seleccionado correctamente.");
+        } catch (Exception e) {
+            logger.error("Error al seleccionar el producto: {}", e.getMessage(), e);
+        }
+    }
+
+    public void selectFirstProduct() {
+        try {
+            if (productsList != null && !productsList.isEmpty()) {
+                selectProduct(productsList.get(0));
+            } else {
+                // Probar encontrar de nuevo al lista y clickear el primer producto
+                productsList = commonActions.findElements("//*[@data-test-id='results-list']//*[@data-test-id='result-item']");
+                if (productsList != null && !productsList.isEmpty()) {
+                    selectProduct(productsList.get(0));
+                } else {
+                    logger.warn("No se encontraron productos en la lista.");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fallo al intentar seleccionar el primer producto: {}", e.getMessage(), e);
+        }
     }
 
     public String getProductOriginalPriceByIndex(int index) {

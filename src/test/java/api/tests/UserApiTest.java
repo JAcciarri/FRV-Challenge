@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 import java.util.List;
 import java.util.Map;

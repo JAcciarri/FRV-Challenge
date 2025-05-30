@@ -1,12 +1,9 @@
-package actions;
+package fravega.actions;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 import org.slf4j.Logger;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 import java.time.Duration;
 import java.util.List;
@@ -57,8 +54,32 @@ public class CommonActions {
         String desc = (description == null || description.isEmpty())
                 ? element.getAttribute("data-test-id")
                 : description;
-        logger.info("Clicking on element: {}", desc);
-        element.click();
+        try {
+            element.click();
+            logger.info("Clicked on element: {}", desc);
+        } catch (StaleElementReferenceException e) {
+            logger.warn("Elemento obsoleto al intentar hacer click en {}. Reintentando.", desc);
+            waitForElementDisplayed(element);
+            element.click();
+        }
+    }
+
+    public void clickElementJS(WebElement element, String description) {
+        waitForElementDisplayed(element);
+        String desc = (description == null || description.isEmpty())
+                ? element.getAttribute("data-test-id")
+                : description;
+        try {
+            element.click();
+        } catch (ElementClickInterceptedException e) {
+            logger.warn("Click interceptado para {}. Reintentando con JavaScript.", desc);
+            try {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+            } catch (Exception jsEx) {
+                logger.error("Falló el click por JS también para {}: {}", desc, jsEx.getMessage());
+                throw jsEx;
+            }
+        }
     }
 
     public void typeText(WebElement element, String text) {
@@ -143,6 +164,37 @@ public class CommonActions {
             logger.warn("No se encontraron elementos con el selector: {}", selector);
             return List.of();
         }
+    }
+    public WebElement findElement(String selector) {
+        try {
+            if(selector.startsWith("//")) {
+                return driver.findElement(By.xpath(selector));
+            } else {
+                return driver.findElement(By.cssSelector(selector));
+            }
+        } catch (NoSuchElementException e) {
+            logger.warn("No se encontró el elemento con el selector: {}", selector);
+            return null;
+        }
+    }
+
+    public void waitForDropdownOptionsToLoad(WebElement dropdown) {
+        waitForDropdownOptionsToLoad(dropdown, 1);
+    }
+
+    public void waitForDropdownOptionsToLoad(WebElement dropdown, int expectedMinOptions) {
+        new WebDriverWait(driver, Duration.ofSeconds(5)).until(driver -> {
+            Select select = new Select(dropdown);
+            return select.getOptions().size() >= expectedMinOptions;
+        });
+    }
+
+    public void waitForElementsToAppear(String selector, Duration timeout) {
+        new FluentWait<>(driver)
+                .withTimeout(timeout)
+                .pollingEvery(Duration.ofMillis(500))
+                .ignoring(NoSuchElementException.class)
+                .until(d -> !findElements(selector).isEmpty());
     }
 
 

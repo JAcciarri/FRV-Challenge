@@ -1,8 +1,7 @@
-package tests;
+package fravega.tests;
 
-import actions.CommonActions;
-import base.ApplicationBaseTest;
-import org.checkerframework.checker.units.qual.A;
+import fravega.actions.CommonActions;
+import fravega.base.ApplicationBaseTest;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -10,11 +9,11 @@ import org.testng.Assert;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import pages.CheckoutPage;
-import pages.FravegaMainPage;
-import pages.ProductPage;
-import pages.ProductsSearchedPage;
-import utils.LoggerUtil;
+import fravega.pages.CheckoutPage;
+import fravega.pages.FravegaMainPage;
+import fravega.pages.ProductPage;
+import fravega.pages.ProductsSearchedPage;
+import fravega.utils.LoggerUtil;
 
 import java.util.List;
 
