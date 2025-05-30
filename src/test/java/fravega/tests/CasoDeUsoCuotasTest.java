@@ -2,6 +2,7 @@ package fravega.tests;
 
 import fravega.actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
+import fravega.dataproviders.CuotasDataProvider;
 import fravega.helpers.CuotaHelper;
 import fravega.helpers.pojo.CuotasDisponibles;
 import fravega.helpers.pojo.TarjetaDeCredito;
@@ -23,8 +24,8 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
     private static final Logger logger = LoggerUtil.getLogger(CasoDeUsoCuotasTest.class);
 
 
-    @Test
-    public void verificarPromocionesDe6CuotasMultiplesTarjetasYBancos() {
+    @Test(dataProvider = "injectAllCuotasAvailables", dataProviderClass = CuotasDataProvider.class)
+    public void verificarPromocionesDeCuotasPorTarjetaYBanco(CuotasDisponibles inputDataCuotas) {
         WebDriver driver = getDriver();
         CommonActions commonActions = new CommonActions(driver);
         FravegaMainPage fravegaMainPage = new FravegaMainPage(driver);
@@ -33,47 +34,60 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
         SoftAssert softAssert = new SoftAssert();
         ProductPage productPage = new ProductPage(driver);
 
-        try{
-            fravegaMainPage.openSpecificCuotasPage(CuotasDisponibles.C_6);
+        try {
+            fravegaMainPage.openSpecificCuotasPage(inputDataCuotas);
             productsSearchedPage.selectFirstProduct();
-            if(!productPage.isProductPageLoaded()){
-                logger.error("La página del producto no se cargó correctamente.");
-            }
+            Assert.assertTrue(productPage.isProductPageLoaded(), "La página del producto no se cargó correctamente.");
 
-            // Paso 1: capturar tarjetas que participan de la promo de 6 cuotas sin interés
-            List<TarjetaDeCredito> tarjetasPromocionadas = productPage.getAvailableCreditCardsForPromotion();
-            Assert.assertFalse(tarjetasPromocionadas.isEmpty(), "No se encontraron tarjetas promocionadas con 6 cuotas sin interés.");
+            final String FINANCED_FINAL_PRICE = productPage.getProductDiscountedPrice();
+            List<TarjetaDeCredito> tarjetasPromocionadas = productPage.getAvailableCreditCardsForPromotion(inputDataCuotas);
+            Assert.assertFalse(tarjetasPromocionadas.isEmpty(), "No hay tarjetas promocionadas con " + inputDataCuotas.asString() + " cuotas sin interés.");
 
-            // Paso 2: entrar al modal
             productPage.openPaymentModal();
             cuotasModalPage.openAllPaymentMethodsTab();
 
-            // Paso 3: validar cada tarjeta detectada
+            logger.info("Verificando cuotas para las tarjetas promocionadas: {}", tarjetasPromocionadas);
+            /*
+            Iteramos sobre las tarjetas promocionadas y verificamos que cada una de ellas tenga las cuotas solicitadas.
+             */
+
             for (TarjetaDeCredito tarjeta : tarjetasPromocionadas) {
                 cuotasModalPage.selectCardByEnum(tarjeta);
                 Map<String, List<CuotaInfo>> allCuotasAllBanks = cuotasModalPage.getAllCuotasForAllBanksForCreditCard();
+                /* Podemos verificar que exista AL MENOS un banco que ofrezca las cuotas solicitadas, ya que puede ser que no todos los bancos ofrezcan las mismas cuotas para una tarjeta en particular.
+                 */
+                List<CuotaInfo> allCuotas = CuotaHelper.flattenCuotasForAllBanks(allCuotasAllBanks);
+                Optional<CuotaInfo> cuotaOptional = CuotaHelper.filterCuotasByQuantity(allCuotas, inputDataCuotas);
 
-                // Paso 4: Validar para CADA Banco soportado de esta tarjeta especifica
-                for( Map.Entry<String, List<CuotaInfo>> bank : allCuotasAllBanks.entrySet()) {
-                    String bankName = bank.getKey();
-                    List<CuotaInfo> cuotas = bank.getValue();
+                if (cuotaOptional.isEmpty()) {
+                    softAssert.fail("No se encontro en ningun banco " + inputDataCuotas.asString() + " cuotas para la tarjeta " + tarjeta.name());
+                    continue; // Si no hay cuotas, saltamos a la siguiente tarjeta
+                }
 
-                    // Verificar que la opción de 6 cuotas esté presente
-                    Optional<CuotaInfo> cuotaDeSeis = CuotaHelper.filterCuotasByQuantity(cuotas, CuotasDisponibles.C_6);
-                    softAssert.assertTrue(cuotaDeSeis.isPresent(), "No se encontró la opción de 6 cuotas para " + tarjeta.name() + " en el banco " + bankName);
+                for (Map.Entry<String, List<CuotaInfo>> entry : allCuotasAllBanks.entrySet()) {
+                    String bank = entry.getKey();
+                    List<CuotaInfo> cuotas = entry.getValue();
+                    Optional<CuotaInfo> cuota = CuotaHelper.filterCuotasByQuantity(cuotas, inputDataCuotas);
 
-                    // Verificar que la cuota de 6 no tenga interés
-                    softAssert.assertTrue(cuotaDeSeis.get().hasNoInterests(), "La cuota de 6 con " + tarjeta.name() + " en el banco " + bankName + " tiene interés: " + cuotaDeSeis.get().getInterest());
+                    if(cuota.isEmpty()){
+                        // Puede pasar que dada una tarjeta, para un banco en especifico no se ofrezcan las cuotas solicitadas, y no por eso debe fallar el test
+                        continue;
+                    }
+
+                    // En caso de que si la ofrezcan, queremos verificar que el precio financiado sea el correcto y que no tenga intereses
+                    softAssert.assertEquals(cuota.get().getTotalFinanced(), FINANCED_FINAL_PRICE,
+                            "El precio financiado no coincide para " + tarjeta.name() + " en " + bank);
+                    softAssert.assertTrue(cuota.get().hasNoInterests(),
+                            "Cuota con interés para " + tarjeta.name() + " en " + bank + ": " + cuota.get().getInterest());
                 }
             }
 
         } catch (Exception e) {
-            logger.error("Estado del test: Falló. {}", e.getMessage());
+            logger.error("Error en test para " + inputDataCuotas + ": {}", e.getMessage(), e);
             softAssert.fail(e.getMessage());
         } finally {
             softAssert.assertAll();
         }
-
     }
 
     @Test

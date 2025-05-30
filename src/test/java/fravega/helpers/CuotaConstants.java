@@ -22,7 +22,7 @@ public class CuotaConstants {
     public static final String ADD_REL_XPATH_ROW_INTEREST = ".//td[4]";           // Monto de intereses
 
     // Selectores dinamicos relativos a las promociones bancarias - cantidad de cuotas que ofrecen sin interes
-    public  static final String DYNAMIC_PROMOTIONS_WITHOUT_INTEREST_6 = "//div[@data-test-id='payment-tooltip']//b[text()='6']";
+    public  static final String DYNAMIC_PROMOTIONS_WITHOUT_INTEREST = "//div[@data-test-id='payment-tooltip']//b[text()='@CUOTAS@']";
     public static final String ADD_REL_XPATH_DYNAMIC_CARDS_TO_BE_SELECTED = ".//..//..//..//img";
 
 }

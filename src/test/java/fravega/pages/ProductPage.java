@@ -85,18 +85,21 @@ public class ProductPage {
     }
 
 
-    public List<TarjetaDeCredito> getAvailableCreditCardsForPromotion(){
+    public List<TarjetaDeCredito> getAvailableCreditCardsForPromotion(CuotasDisponibles cuotas){
         List<TarjetaDeCredito> availableCards = new ArrayList<>();
-
+        String dynamicLocator = CuotaConstants.DYNAMIC_PROMOTIONS_WITHOUT_INTEREST.replace("@CUOTAS@", cuotas.asString());
         try {
-            WebElement rowCuotasAvailable = commonActions.findElement(CuotaConstants.DYNAMIC_PROMOTIONS_WITHOUT_INTEREST_6);
+            WebElement rowCuotasAvailable = commonActions.findElement(dynamicLocator);
             if (rowCuotasAvailable == null) {
-                logger.warn("No se encontraron tarjetas disponibles para promociones de 6 cuotas sin interés.");
+                logger.warn("No se encontraron tarjetas disponibles para promociones de {} cuotas sin interés.", cuotas.asString());
                 return Collections.emptyList();
             }
 
             String relativeLocator = CuotaConstants.ADD_REL_XPATH_DYNAMIC_CARDS_TO_BE_SELECTED;
             List<WebElement> cards = rowCuotasAvailable.findElements(By.xpath(relativeLocator));
+            if (cards.isEmpty()) {
+                logger.warn("No se encontraron tarjetas en la fila de promoción de {} cuotas.", cuotas.asString());
+            }
 
             /* Iteramos sobre las tarjetas disponibles en la fila de cuotas sin interés
              * y las agregamos a la lista de tarjetas disponibles.
@@ -116,9 +119,9 @@ public class ProductPage {
                 }
             }
 
-            logger.info("Tarjetas detectadas para promo de 6 cuotas sin interés: {}", availableCards);
+            logger.info("Tarjetas detectadas para promo de {} cuotas sin interés: {}", cuotas.asString(), availableCards);
         } catch (Exception e) {
-            logger.error("Error al obtener tarjetas disponibles para promoción 6 cuotas sin interés: {}", e.getMessage(), e);
+            logger.error("Error al obtener tarjetas disponibles para promoción {} cuotas sin interés: {}", cuotas.asString(), e);
         }
 
         return availableCards;

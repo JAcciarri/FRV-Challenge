@@ -3,7 +3,9 @@ package fravega.helpers;
 import fravega.helpers.pojo.CuotaInfo;
 import fravega.helpers.pojo.CuotasDisponibles;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,6 +23,12 @@ public class CuotaHelper {
         return cuotas.stream()
                 .filter(c -> !c.hasNoInterests())
                 .collect(Collectors.toList());
+    }
+
+    public static List<CuotaInfo> flattenCuotasForAllBanks(Map<String, List<CuotaInfo>> allCuotasAllBanks){
+            return allCuotasAllBanks.values().stream()
+                        .flatMap(List::stream)
+                        .toList();
     }
 
     public static String getURLCuota(CuotasDisponibles quantity) {
