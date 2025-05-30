@@ -1,9 +1,9 @@
-package actions;
+package fravega.actions;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 import org.slf4j.Logger;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 import java.time.Duration;
 import java.util.List;

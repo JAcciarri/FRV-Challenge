@@ -1,4 +1,4 @@
-package fravega.enums;
+package fravega.helpers.pojo;
 
 public enum TarjetaDeCredito {
 

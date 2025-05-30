@@ -1,17 +1,17 @@
 package fravega.tests;
 
-import actions.CommonActions;
+import fravega.actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
-import fravega.enums.TarjetaDeCredito;
+import fravega.helpers.pojo.TarjetaDeCredito;
 import fravega.pages.*;
-import fravega.pojo.CuotaInfo;
+import fravega.helpers.pojo.CuotaInfo;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 import java.util.List;
 import java.util.Map;

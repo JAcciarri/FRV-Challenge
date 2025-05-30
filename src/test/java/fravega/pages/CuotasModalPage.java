@@ -1,18 +1,16 @@
 package fravega.pages;
 
-import actions.CommonActions;
-import fravega.enums.TarjetaDeCredito;
-import fravega.pojo.CuotaConstants;
-import fravega.pojo.CuotaInfo;
+import fravega.actions.CommonActions;
+import fravega.helpers.pojo.TarjetaDeCredito;
+import fravega.helpers.pojo.CuotaConstants;
+import fravega.helpers.pojo.CuotaInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 import java.time.Duration;
 import java.util.*;

@@ -3,7 +3,7 @@ import api.models.UserModel;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 public class UserApiService {
 

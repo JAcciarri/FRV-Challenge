@@ -1,6 +1,6 @@
 package fravega.tests;
 
-import actions.CommonActions;
+import fravega.actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,7 +13,7 @@ import fravega.pages.CheckoutPage;
 import fravega.pages.FravegaMainPage;
 import fravega.pages.ProductPage;
 import fravega.pages.ProductsSearchedPage;
-import utils.LoggerUtil;
+import fravega.utils.LoggerUtil;
 
 import java.util.List;
 
