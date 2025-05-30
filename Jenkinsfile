@@ -6,6 +6,9 @@ pipeline {
         jdk 'jdk-24'
     }
 
+    triggers {
+        githubPush()
+    }
     environment {
         MAVEN_OPTS = '-Dmaven.test.failure.ignore=true'
     }
