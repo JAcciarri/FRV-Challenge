@@ -2,6 +2,8 @@ package fravega.tests;
 
 import fravega.actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
+import fravega.helpers.CuotaHelper;
+import fravega.helpers.pojo.CuotasDisponibles;
 import fravega.helpers.pojo.TarjetaDeCredito;
 import fravega.pages.*;
 import fravega.helpers.pojo.CuotaInfo;
@@ -19,6 +21,60 @@ import java.util.Optional;
 
 public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
     private static final Logger logger = LoggerUtil.getLogger(CasoDeUsoCuotasTest.class);
+
+
+    @Test
+    public void verificarPromocionesDe6CuotasMultiplesTarjetasYBancos() {
+        WebDriver driver = getDriver();
+        CommonActions commonActions = new CommonActions(driver);
+        FravegaMainPage fravegaMainPage = new FravegaMainPage(driver);
+        ProductsSearchedPage productsSearchedPage = new ProductsSearchedPage(driver);
+        CuotasModalPage cuotasModalPage = new CuotasModalPage(driver);
+        SoftAssert softAssert = new SoftAssert();
+        ProductPage productPage = new ProductPage(driver);
+
+        try{
+            fravegaMainPage.openSpecificCuotasPage(CuotasDisponibles.C_6);
+            productsSearchedPage.selectFirstProduct();
+            if(!productPage.isProductPageLoaded()){
+                logger.error("La página del producto no se cargó correctamente.");
+            }
+
+            // Paso 1: capturar tarjetas que participan de la promo de 6 cuotas sin interés
+            List<TarjetaDeCredito> tarjetasPromocionadas = productPage.getAvailableCreditCardsForPromotion();
+            Assert.assertFalse(tarjetasPromocionadas.isEmpty(), "No se encontraron tarjetas promocionadas con 6 cuotas sin interés.");
+
+            // Paso 2: entrar al modal
+            productPage.openPaymentModal();
+            cuotasModalPage.openAllPaymentMethodsTab();
+
+            // Paso 3: validar cada tarjeta detectada
+            for (TarjetaDeCredito tarjeta : tarjetasPromocionadas) {
+                cuotasModalPage.selectCardByEnum(tarjeta);
+                Map<String, List<CuotaInfo>> allCuotasAllBanks = cuotasModalPage.getAllCuotasForAllBanksForCreditCard();
+
+                // Paso 4: Validar para CADA Banco soportado de esta tarjeta especifica
+                for( Map.Entry<String, List<CuotaInfo>> bank : allCuotasAllBanks.entrySet()) {
+                    String bankName = bank.getKey();
+                    List<CuotaInfo> cuotas = bank.getValue();
+
+                    // Verificar que la opción de 6 cuotas esté presente
+                    Optional<CuotaInfo> cuotaDeSeis = CuotaHelper.filterCuotasByQuantity(cuotas, CuotasDisponibles.C_6);
+                    softAssert.assertTrue(cuotaDeSeis.isPresent(), "No se encontró la opción de 6 cuotas para " + tarjeta.name() + " en el banco " + bankName);
+
+                    // Verificar que la cuota de 6 no tenga interés
+                    softAssert.assertTrue(cuotaDeSeis.get().hasNoInterests(), "La cuota de 6 con " + tarjeta.name() + " en el banco " + bankName + " tiene interés: " + cuotaDeSeis.get().getInterest());
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("Estado del test: Falló. {}", e.getMessage());
+            softAssert.fail(e.getMessage());
+        } finally {
+            softAssert.assertAll();
+        }
+
+    }
 
     @Test
     public void verificarCasoDeUsoCuotas() {

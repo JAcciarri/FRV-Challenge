@@ -33,9 +33,32 @@ public class ProductsSearchedPage {
     }
 
     public void selectProduct(WebElement product) {
-        WebElement clickableProduct = product.findElement(By.xpath(".//a"));
-        commonActions.clickElement(clickableProduct, "Link del producto");
-        commonActions.waitForPageLoad();
+        try {
+            WebElement clickableProduct = product.findElement(By.xpath(".//a"));
+            commonActions.clickElement(clickableProduct, "Link del producto");
+            commonActions.waitForPageLoad();
+            logger.info("Producto seleccionado correctamente.");
+        } catch (Exception e) {
+            logger.error("Error al seleccionar el producto: {}", e.getMessage(), e);
+        }
+    }
+
+    public void selectFirstProduct() {
+        try {
+            if (productsList != null && !productsList.isEmpty()) {
+                selectProduct(productsList.get(0));
+            } else {
+                // Probar encontrar de nuevo al lista y clickear el primer producto
+                productsList = commonActions.findElements("//*[@data-test-id='results-list']//*[@data-test-id='result-item']");
+                if (productsList != null && !productsList.isEmpty()) {
+                    selectProduct(productsList.get(0));
+                } else {
+                    logger.warn("No se encontraron productos en la lista.");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Fallo al intentar seleccionar el primer producto: {}", e.getMessage(), e);
+        }
     }
 
     public String getProductOriginalPriceByIndex(int index) {

@@ -2,7 +2,7 @@ package fravega.pages;
 
 import fravega.actions.CommonActions;
 import fravega.helpers.pojo.TarjetaDeCredito;
-import fravega.helpers.pojo.CuotaConstants;
+import fravega.helpers.CuotaConstants;
 import fravega.helpers.pojo.CuotaInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -39,6 +39,8 @@ public class CuotasModalPage {
     public WebElement creditCardsContainer;
     @FindBy(xpath = "//div[@data-test-id='payment-method']/figure/img")
     public WebElement currentSelectedCard;
+    @FindBy(xpath = "//p[contains(text(),'promociones bancarias')]")
+    public List<WebElement> promotionsCardsContainer;
 
     public void openAllPaymentMethodsTab() {
         commonActions.waitForElementDisplayed(cuotasModalOverlay);
@@ -51,46 +53,68 @@ public class CuotasModalPage {
         commonActions.clickElement(selectPaymentMethod);
         commonActions.waitForElementDisplayed(creditCardsContainer);
         try{
+            boolean found = false;
             for (WebElement cardElement : creditCards) {
                 String src = cardElement.getAttribute("src");
-                if (src.equals(card.getSrc())) {
+                if (src != null && src.equals(card.getSrc())) {
                     commonActions.clickElement(cardElement, "Tarjeta " + card.name());
-                    return;
+                    found = true;
+                    break;
                 }
+            }
+            if (!found) {
+                logger.warn("No se encontró la tarjeta en el modal: {}", card.name());
             }
         } catch (NoSuchElementException e) {
             logger.error("No se encontró la tarjeta: " + card.name(), e);
         }
     }
 
+
+    /*     * Itera sobre todos los bancos disponibles para la tarjeta de crédito seleccionada.
+     * Extrae y devuelve la información de cuotas, precio total financiado e intereses.
+     */
     public Map<String, List<CuotaInfo>> getAllCuotasForAllBanksForCreditCard() {
         int index = 0;
-        Map<String, List<CuotaInfo>> cuotasPerBank = new HashMap<String, List<CuotaInfo>>();
+        Map<String, List<CuotaInfo>> cuotasPerBank = new HashMap<>();
 
-        commonActions.waitForElementDisplayed(selectBank);
         while (true) {
-            WebElement selectBankDynamic = commonActions.findElement(CuotaConstants.DYNAMIC_SELECT_BANK);
-            commonActions.clickElement(selectBankDynamic, "Abrir dropdown bancos");
-            commonActions.waitForElementsToAppear(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD, Duration.ofSeconds(5));
-            List<WebElement> banks = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD);
+            try {
+                WebElement selectBankDynamic = commonActions.findElement(CuotaConstants.DYNAMIC_SELECT_BANK);
+                commonActions.clickElement(selectBankDynamic, "Abrir dropdown bancos");
+                commonActions.waitForElementsToAppear(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD, Duration.ofSeconds(5));
+                List<WebElement> banks = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_BANKS_FOR_A_CREDIT_CARD);
 
-            if (index >= banks.size()) {
-                break; // salimos cuando ya no quedan más bancos por iterar
+                if (index >= banks.size()) {
+                    commonActions.clickElement(selectBankDynamic, "Cerrar dropdown bancos");
+                    break;
+                }
+
+                WebElement currentBank = banks.get(index);
+                String bankName = currentBank.findElement(By.xpath(".//p")).getText().trim();
+
+                if (bankName.equals("Otros Bancos")) {
+                    index++;
+                    commonActions.clickElement(selectBankDynamic, "Cerrar dropdown bancos");
+                    continue;
+                }
+
+                commonActions.scrollToElement(currentBank);
+                commonActions.clickElement(currentBank, "Banco: " + bankName);
+                commonActions.waitForPageLoad();
+                List<CuotaInfo> cuotas = getCuotasForSelectedBank();
+                cuotasPerBank.put(bankName, cuotas);
+
+            } catch (Exception e) {
+                logger.warn("Fallo procesando banco en índice {}: {}", index, e.getMessage());
             }
-
-            WebElement currentBank = banks.get(index);
-            String currentBankName = currentBank.findElement(By.xpath(".//p")).getText();
-
-            commonActions.scrollToElement(currentBank);
-            commonActions.clickElement(currentBank, "Banco: " + currentBankName);
-            commonActions.waitForPageLoad();
-            List<CuotaInfo> cuotas = getCuotasForSelectedBank();
-            cuotasPerBank.put(currentBankName, cuotas);
 
             index++;
         }
         return cuotasPerBank;
     }
+
+
 
     /**
      * Itera sobre todos los pagos disponibles para el banco seleccionado.
@@ -99,11 +123,15 @@ public class CuotasModalPage {
     public List<CuotaInfo> getCuotasForSelectedBank(){
         commonActions.waitForElementsToAppear(CuotaConstants.DYNAMIC_ALL_PAYMENTS, Duration.ofSeconds(5));
         List<WebElement> payments = commonActions.findElements(CuotaConstants.DYNAMIC_ALL_PAYMENTS);
+        if (payments.isEmpty()) {
+            logger.warn("No se encontraron filas de cuotas para el banco seleccionado.");
+            return List.of();
+        }
         List<CuotaInfo> cuotas = new ArrayList<>();
         for (WebElement payment : payments) {
-            String cuota = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_CUOTAS)).getText();
-            String totalPrice = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_TOTAL_FINANCED)).getText();
-            String interests = payment.findElement(By.xpath(CuotaConstants.ADD_XPATH_ROW_INTEREST)).getText();
+            String cuota = payment.findElement(By.xpath(CuotaConstants.ADD_REL_XPATH_ROW_CUOTAS)).getText();
+            String totalPrice = payment.findElement(By.xpath(CuotaConstants.ADD_REL_XPATH_ROW_TOTAL_FINANCED)).getText();
+            String interests = payment.findElement(By.xpath(CuotaConstants.ADD_REL_XPATH_ROW_INTEREST)).getText();
             cuotas.add(new CuotaInfo(cuota, totalPrice, interests));
             logger.info("Cuotas: {}, Precio Total financiado: {}, Intereses: {}", cuota, totalPrice, interests);
         }

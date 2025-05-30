@@ -6,6 +6,9 @@
         <parameter name="browser" value="chrome"/>
         <classes>
             <class name="fravega.tests.CasoDeUsoCuotasTest">
+                <methods>
+                    <include name="verificarPromocionesDe6CuotasMultiplesTarjetasYBancos"/>
+                </methods>
             </class>
         </classes>
     </test>

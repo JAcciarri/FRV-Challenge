@@ -1,6 +1,8 @@
 package fravega.pages;
 
 import fravega.actions.CommonActions;
+import fravega.helpers.CuotaHelper;
+import fravega.helpers.pojo.CuotasDisponibles;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -30,29 +32,35 @@ public class FravegaMainPage {
     @FindBy(css = "fieldset button[type='submit']")
     public WebElement searchProductsButton;
 
-
     public void openFravegaMainPage() {
         commonActions.openPage(URL);
     }
     public void openFravegaCuotasPage() {
         commonActions.openPage(URL_DE_CUOTAS);
         commonActions.waitForPageLoad();
-        if (commonActions.isElementDisplayed(modalPostalCode)) {
-            commonActions.clickElement(modalPostalCodeCloseButton);
-        }
+        handleModalIfDisplayed();
+    }
+
+    public void openSpecificCuotasPage(CuotasDisponibles cuotas){
+        commonActions.openPage(CuotaHelper.getURLCuota(cuotas));
+        handleModalIfDisplayed();
     }
 
     public void openMainPageAndHandleModal() {
         openFravegaMainPage();
-        if (commonActions.isElementDisplayed(modalPostalCode)) {
-            commonActions.clickElement(modalPostalCodeCloseButton);
-        }
+        handleModalIfDisplayed();
     }
 
     public void searchProduct(String product) {
         commonActions.typeText(inputSearchProduct, product);
         commonActions.clickElement(searchProductsButton, "Buscar productos");
         commonActions.waitForPageLoad();
+    }
+
+    private void handleModalIfDisplayed() {
+        if (commonActions.isElementDisplayed(modalPostalCode)) {
+            commonActions.clickElement(modalPostalCodeCloseButton, "Cerrar modal de código postal");
+        }
     }
 
 
