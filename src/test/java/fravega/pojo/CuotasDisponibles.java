@@ -1,4 +1,4 @@
-package fravega.helpers.pojo;
+package fravega.pojo;
 
 public enum CuotasDisponibles {
      C_3("3"),

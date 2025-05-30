@@ -1,4 +1,4 @@
-package fravega.helpers.pojo;
+package fravega.pojo;
 
 public class CuotaInfo {
     private final String cuotas;

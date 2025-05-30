@@ -1,4 +1,4 @@
-package fravega.helpers.pojo;
+package fravega.pojo;
 
 public enum CuotasSinInteresImg {
     CUOTAS_3("https://images.fravega.com/f64/63132274c7db5975d86b4de2567a44da.png", "3 cuotas"),
@@ -19,5 +19,14 @@ public enum CuotasSinInteresImg {
     @Override
     public String toString() {
         return cuotas;
+    }
+
+    public static CuotasSinInteresImg fromCuotasDisponibles(CuotasDisponibles cuota) {
+        return switch (cuota) {
+            case C_3 -> CUOTAS_3;
+            case C_6 -> CUOTAS_6;
+            case C_9 -> CUOTAS_9;
+            case C_12 -> CUOTAS_12;
+        };
     }
 }

@@ -1,4 +1,4 @@
-package fravega.helpers.pojo;
+package fravega.pojo;
 
 import java.util.Arrays;
 
