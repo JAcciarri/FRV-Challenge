@@ -93,10 +93,16 @@ public class CuotasModalPage {
                 WebElement currentBank = banks.get(index);
                 String bankName = currentBank.findElement(By.xpath(".//p")).getText().trim();
 
+                // Decision subjetiva a explicar. Si el banco es "Otros Bancos", lo saltamos y continuamos con el siguiente, Excepto que sea la unica opcion disponible para la tarjeta
                 if (bankName.equals("Otros Bancos")) {
-                    index++;
-                    commonActions.clickElement(selectBankDynamic, "Cerrar dropdown bancos");
-                    continue;
+                    if( banks.size() == 1) {
+                        logger.info("No hay otros bancos disponibles, procesando 'Otros Bancos' como único banco.");
+                    } else {
+                        index++;
+                        commonActions.clickElement(selectBankDynamic, "Cerrar dropdown bancos");
+                        continue;
+                    }
+
                 }
 
                 commonActions.scrollToElement(currentBank);

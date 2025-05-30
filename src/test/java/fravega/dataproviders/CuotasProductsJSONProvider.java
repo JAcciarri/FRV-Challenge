@@ -15,10 +15,10 @@ public class CuotasProductsJSONProvider {
         );
     }
 
-    @DataProvider(name = "cuotasCelularesDataProvider")
-    public Object[][] cuotasCelularesDataProvider() throws Exception {
+    @DataProvider(name = "cuotasHeladerasDataProvider")
+    public Object[][] cuotasHeladerasDataProvider() throws Exception {
         return JsonTestDataLoader.loadGenericTestData(
-                "data/cuotas_celulares.json",
+                "data/cuotas_heladeras.json",
                 new TypeReference<List<Map<String, String>>>() {}
         );
     }

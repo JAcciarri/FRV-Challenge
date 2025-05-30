@@ -94,7 +94,7 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
         }
     }
 
-    @Test(dataProvider = "cuotasNotebookDataProvider", dataProviderClass = CuotasProductsJSONProvider.class)
+    @Test(dataProvider = "cuotasHeladerasDataProvider", dataProviderClass = CuotasProductsJSONProvider.class)
     public void verificarCuotasPorProducto(Map<String, String> data) {
         WebDriver driver = getDriver();
         CommonActions commonActions = new CommonActions(driver);
