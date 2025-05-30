@@ -14,9 +14,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <includes>
-                        <include>testng/*.xml</include>
-                    </includes>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng/SmokeSuite.xml</suiteXmlFile>
+                    </suiteXmlFiles>
                 </configuration>
             </plugin>
             <plugin>
