@@ -2,8 +2,8 @@ package fravega.pages;
 
 import fravega.actions.CommonActions;
 import fravega.helpers.CuotaConstants;
-import fravega.helpers.pojo.CuotasDisponibles;
-import fravega.helpers.pojo.TarjetaDeCredito;
+import fravega.pojo.CuotasDisponibles;
+import fravega.pojo.TarjetaDeCredito;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

@@ -2,7 +2,7 @@ package fravega.pages;
 
 import fravega.actions.CommonActions;
 import fravega.helpers.CuotaHelper;
-import fravega.helpers.pojo.CuotasDisponibles;
+import fravega.pojo.CuotasDisponibles;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;

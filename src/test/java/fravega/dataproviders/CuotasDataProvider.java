@@ -1,7 +1,7 @@
 package fravega.dataproviders;
 
 import org.testng.annotations.DataProvider;
-import fravega.helpers.pojo.CuotasDisponibles;
+import fravega.pojo.CuotasDisponibles;
 
 public class CuotasDataProvider {
 

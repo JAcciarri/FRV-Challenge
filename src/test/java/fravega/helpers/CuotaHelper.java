@@ -1,9 +1,8 @@
 package fravega.helpers;
 
-import fravega.helpers.pojo.CuotaInfo;
-import fravega.helpers.pojo.CuotasDisponibles;
+import fravega.pojo.CuotaInfo;
+import fravega.pojo.CuotasDisponibles;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
