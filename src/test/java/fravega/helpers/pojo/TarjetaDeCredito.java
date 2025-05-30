@@ -1,5 +1,7 @@
 package fravega.helpers.pojo;
 
+import java.util.Arrays;
+
 public enum TarjetaDeCredito {
 
         VISA("https://images.fravega.com/f300/d91d7904a85783a86377e30feb87e7ff.png.webp"),
@@ -15,5 +17,23 @@ public enum TarjetaDeCredito {
 
         public String getSrc() {
             return src;
+        }
+
+        @Override
+        public String toString() {
+            return this.name();
+        }
+
+        /**
+         * Busca una tarjeta de crédito por su atributo src.
+         *
+         * @param src el atributo src de la tarjeta de crédito
+         * @return la tarjeta de crédito correspondiente o null si no se encuentra
+         */
+        public static TarjetaDeCredito fromSrc(String src) {
+                return Arrays.stream(TarjetaDeCredito.values())
+                        .filter(c -> c.getSrc().equals(src))
+                        .findFirst()
+                        .orElse(null);
         }
 }
