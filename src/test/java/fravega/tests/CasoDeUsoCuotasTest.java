@@ -3,13 +3,13 @@ package fravega.tests;
 import fravega.actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
 import fravega.dataproviders.CuotasDataProvider;
+import fravega.dataproviders.CuotasProductsJSONProvider;
 import fravega.helpers.CuotaHelper;
-import fravega.helpers.pojo.CuotasDisponibles;
-import fravega.helpers.pojo.TarjetaDeCredito;
+import fravega.pojo.CuotasDisponibles;
+import fravega.pojo.TarjetaDeCredito;
 import fravega.pages.*;
-import fravega.helpers.pojo.CuotaInfo;
+import fravega.pojo.CuotaInfo;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,7 +41,8 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
 
             final String FINANCED_FINAL_PRICE = productPage.getProductDiscountedPrice();
             List<TarjetaDeCredito> tarjetasPromocionadas = productPage.getAvailableCreditCardsForPromotion(inputDataCuotas);
-            Assert.assertFalse(tarjetasPromocionadas.isEmpty(), "No hay tarjetas promocionadas con " + inputDataCuotas.asString() + " cuotas sin interés.");
+            Assert.assertFalse(tarjetasPromocionadas.isEmpty(),
+                    "No hay tarjetas promocionadas con " + inputDataCuotas.asString() + " cuotas sin interés.");
 
             productPage.openPaymentModal();
             cuotasModalPage.openAllPaymentMethodsTab();
@@ -75,15 +76,77 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
                     }
 
                     // En caso de que si la ofrezcan, queremos verificar que el precio financiado sea el correcto y que no tenga intereses
-                    softAssert.assertEquals(cuota.get().getTotalFinanced(), FINANCED_FINAL_PRICE,
+                    softAssert.assertEquals(
+                            cuota.get().getTotalFinanced(),
+                            FINANCED_FINAL_PRICE,
                             "El precio financiado no coincide para " + tarjeta.name() + " en " + bank);
-                    softAssert.assertTrue(cuota.get().hasNoInterests(),
+                    softAssert.assertTrue(
+                            cuota.get().hasNoInterests(),
                             "Cuota con interés para " + tarjeta.name() + " en " + bank + ": " + cuota.get().getInterest());
                 }
             }
 
         } catch (Exception e) {
             logger.error("Error en test para " + inputDataCuotas + ": {}", e.getMessage(), e);
+            softAssert.fail(e.getMessage());
+        } finally {
+            softAssert.assertAll();
+        }
+    }
+
+    @Test(dataProvider = "cuotasNotebookDataProvider", dataProviderClass = CuotasProductsJSONProvider.class)
+    public void verificarCuotasPorProducto(Map<String, String> data) {
+        WebDriver driver = getDriver();
+        CommonActions commonActions = new CommonActions(driver);
+        FravegaMainPage fravegaMainPage = new FravegaMainPage(driver);
+        ProductsSearchedPage productsSearchedPage = new ProductsSearchedPage(driver);
+        ProductPage productPage = new ProductPage(driver);
+        CuotasModalPage cuotasModalPage = new CuotasModalPage(driver);
+        SoftAssert softAssert = new SoftAssert();
+        String inputProductSearch = data.get("product");
+        CuotasDisponibles cuotas = CuotasDisponibles.valueOf(data.get("cuotas"));
+
+
+        try {
+            // Buscar producto
+            fravegaMainPage.openMainPageAndHandleModal();
+            fravegaMainPage.searchProduct(inputProductSearch);
+            productsSearchedPage.clickOnCuotasToFilterProducts(cuotas);
+            productsSearchedPage.selectFirstProductWithDesiredCuotas(cuotas);
+
+            Assert.assertTrue(productPage.isProductPageLoaded(), "No se cargó la página del producto.");
+            String precioFinanciado = productPage.getProductDiscountedPrice();
+
+            List<TarjetaDeCredito> tarjetasPromo = productPage.getAvailableCreditCardsForPromotion(cuotas);
+            Assert.assertFalse(tarjetasPromo.isEmpty(),
+                    "No hay tarjetas promocionadas para " + cuotas.asString());
+
+            productPage.openPaymentModal();
+            cuotasModalPage.openAllPaymentMethodsTab();
+
+            for (TarjetaDeCredito tarjeta : tarjetasPromo) {
+                cuotasModalPage.selectCardByEnum(tarjeta);
+                Map<String, List<CuotaInfo>> allCuotas = cuotasModalPage.getAllCuotasForAllBanksForCreditCard();
+
+                for (Map.Entry<String, List<CuotaInfo>> entry : allCuotas.entrySet()) {
+                    Optional<CuotaInfo> cuota = CuotaHelper.filterCuotasByQuantity(entry.getValue(), cuotas);
+                    if (cuota.isEmpty()) continue;
+
+                    softAssert.assertEquals(
+                            cuota.get().getTotalFinanced(),
+                            precioFinanciado,
+                            "Precio financiado incorrecto para " + tarjeta.name() + " en " + entry.getKey()
+                    );
+
+                    softAssert.assertTrue(
+                            cuota.get().hasNoInterests(),
+                            "Interés no esperado en cuota para " + tarjeta.name() + " en " + entry.getKey()
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("Error en test para '{}', {} cuotas: {}", inputProductSearch, cuotas.asString(), e.getMessage(), e);
             softAssert.fail(e.getMessage());
         } finally {
             softAssert.assertAll();

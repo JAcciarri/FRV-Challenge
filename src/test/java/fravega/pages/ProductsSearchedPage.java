@@ -1,6 +1,8 @@
 package fravega.pages;
 
 import fravega.actions.CommonActions;
+import fravega.pojo.CuotasDisponibles;
+import fravega.pojo.CuotasSinInteresImg;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -10,6 +12,7 @@ import org.slf4j.Logger;
 import fravega.utils.LoggerUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ProductsSearchedPage {
 
@@ -61,6 +64,26 @@ public class ProductsSearchedPage {
         }
     }
 
+    /*
+        * Busca entre los elementos que fueron resultado de la busqueda y luego
+        * Selecciona el primer producto que tenga la cantidad de cuotas deseadas, matcheando por la imagen de cuotas.
+     */
+    public void selectFirstProductWithDesiredCuotas(CuotasDisponibles cuotas) {
+        commonActions.waitForElementDisplayed(productsListContainer);
+        CuotasSinInteresImg cuotaImg = CuotasSinInteresImg.fromCuotasDisponibles(cuotas);
+        Optional<WebElement> producto = productsList.stream()
+                .filter(p -> !p.findElements(By.xpath(".//img[contains(@src, '" + cuotaImg.getSrc() + "')]")).isEmpty())
+                .findFirst();
+
+        if (producto.isPresent()) {
+            WebElement clickable = producto.get().findElement(By.xpath(".//a"));
+            commonActions.clickElement(clickable, "Producto con " + cuotaImg.toString());
+            commonActions.waitForPageLoad();
+        } else {
+            logger.warn("No se encontró ningún producto con {}", cuotaImg.toString());
+        }
+    }
+
     public String getProductOriginalPriceByIndex(int index) {
         WebElement product = productsList.get(index);
         WebElement priceElement = product.findElements(By.xpath(".//span[contains(text(), '$')]")).get(0);
@@ -78,5 +101,18 @@ public class ProductsSearchedPage {
         WebElement titleElement = product.findElement(By.xpath(".//span"));
         return commonActions.getTextFromElement(titleElement);
     }
+
+    public void clickOnCuotasToFilterProducts(CuotasDisponibles cuotas){
+        try{
+            commonActions.waitForElementDisplayed(productsListContainer);
+            String dynamicLocator = "//*[@name='installmentAggregation']//*[contains(text(),'@CUOTAS@')]".replace("@CUOTAS@", cuotas.asString());
+            WebElement cuotasFilter = commonActions.findElement(dynamicLocator);
+            commonActions.clickElement(cuotasFilter, "Filtro de cuotas: " + cuotas.asString());
+        } catch (Exception e) {
+            logger.warn("Error al hacer click en el filtro de cuotas: {}", e.getMessage(), e);
+        }
+
+    }
+
 
 }

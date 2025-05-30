@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Caso de Uso 2" parallel="methods" thread-count="3">
+
+    <test name="Caso de Uso 2 - CUOTAS AVANZADO POR PRODUCTO Y CUOTAS PARAMETRIZADO">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="fravega.tests.CasoDeUsoCuotasTest">
+                <methods>
+                    <include name="verificarCuotasPorProducto"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+    </suite>
+
