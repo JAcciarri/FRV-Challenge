@@ -1,4 +1,4 @@
-package fravega.helpers;
+package fravega.utils.helpers;
 
 import fravega.pojo.CuotaInfo;
 import fravega.pojo.CuotasDisponibles;

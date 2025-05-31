@@ -2,7 +2,7 @@ package fravega.pages;
 
 import fravega.actions.CommonActions;
 import fravega.pojo.TarjetaDeCredito;
-import fravega.helpers.CuotaConstants;
+import fravega.utils.helpers.CuotaConstants;
 import fravega.pojo.CuotaInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

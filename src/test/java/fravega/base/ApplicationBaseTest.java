@@ -1,23 +1,30 @@
 package fravega.base;
 
+import fravega.utils.ScreenshotUtil;
+import fravega.utils.listeners.ScreenshotListener;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.ITestContext;
+import org.testng.ITestResult;
 import webdriver.WebDriverFactory;
 import org.testng.annotations.*;
 
+@Listeners({ScreenshotListener.class})
 public class ApplicationBaseTest {
 
     // ThreadLocal para manejar el WebDriver por hilos y permitir ejecucion paralela
     private static final ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
+    private static final Logger log = LoggerFactory.getLogger(ApplicationBaseTest.class);
 
-    protected WebDriver getDriver() {
-        return threadDriver.get();
+    public static WebDriver getDriver() {
+        WebDriver driver = threadDriver.get();
+        if (driver == null) {
+            throw new IllegalStateException("WebDriver no ha sido inicializado para el hilo actual.");
+        }
+        return driver;
     }
 
-    /*protected WebDriver getDriver() {
-        // Devuelve el driver creado por el metodo setup y sino devuelve uno nuevo de chrome con el Factory
-        return Objects.requireNonNullElseGet(driver, () -> WebDriverFactory.createDriver("chrome", "local"));
-    }*/
 
     @BeforeMethod(alwaysRun = true)
     public void testSetup(ITestContext context) {
@@ -36,8 +43,12 @@ public class ApplicationBaseTest {
     }
 
     @AfterMethod(alwaysRun = true)
-    public void tearDown() {
+    public void tearDown(ITestResult result) {
         WebDriver driver = threadDriver.get();
+        if (result.getStatus() == ITestResult.FAILURE && driver != null) {
+            log.error("Test failed: {}. Capturing screenshot.", result.getName());
+            ScreenshotUtil.capture(driver);
+        }
         if (driver != null) {
             driver.quit();
             threadDriver.remove();
