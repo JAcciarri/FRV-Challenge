@@ -1,6 +1,5 @@
 package fravega.base;
 
-import fravega.utils.ScreenshotUtil;
 import fravega.utils.listeners.ScreenshotListener;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
@@ -45,10 +44,6 @@ public class ApplicationBaseTest {
     @AfterMethod(alwaysRun = true)
     public void tearDown(ITestResult result) {
         WebDriver driver = threadDriver.get();
-        if (result.getStatus() == ITestResult.FAILURE && driver != null) {
-            log.error("Test failed: {}. Capturing screenshot.", result.getName());
-            ScreenshotUtil.capture(driver);
-        }
         if (driver != null) {
             driver.quit();
             threadDriver.remove();
