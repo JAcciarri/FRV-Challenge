@@ -11,13 +11,13 @@ public class ApplicationBaseTest {
     private static final ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
 
     protected WebDriver getDriver() {
-        return threadDriver.get();
+        WebDriver driver = threadDriver.get();
+        if (driver == null) {
+            throw new IllegalStateException("WebDriver no ha sido inicializado para el hilo actual.");
+        }
+        return driver;
     }
 
-    /*protected WebDriver getDriver() {
-        // Devuelve el driver creado por el metodo setup y sino devuelve uno nuevo de chrome con el Factory
-        return Objects.requireNonNullElseGet(driver, () -> WebDriverFactory.createDriver("chrome", "local"));
-    }*/
 
     @BeforeMethod(alwaysRun = true)
     public void testSetup(ITestContext context) {
