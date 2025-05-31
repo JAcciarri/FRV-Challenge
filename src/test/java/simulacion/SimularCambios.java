@@ -7,7 +7,6 @@ public class SimularCambios {
      */
 
     String mensaje = "Simulando cambios simulados en la branch feature-cuotas para pruebas de integración continua.";
-    String cambio = "";
     public String getMensajeChanged() {
         return mensaje;
     }
