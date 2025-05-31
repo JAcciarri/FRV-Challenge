@@ -83,4 +83,4 @@ Definida en el suite XML:
 
 ---
 
-*Para detalles técnicos y decisiones de diseño, ver el documento "Documentacion\_Final.md".*
+*Para detalles técnicos y decisiones de diseño, ver el documento [Documentación Técnica](https://github.com/JAcciarri/FRV-Challenge/blob/main/Documentacion%20Tecnica.md).*
