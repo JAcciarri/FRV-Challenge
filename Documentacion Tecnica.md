@@ -57,7 +57,7 @@ Este Framework de Automatización propone (y permite) que ante cambios en alguna
 
 ## 6. Capturas de pantalla 
 
-En la carpeta screenshots se encuentran imágenes que documentan el proceso de desarrollo y configuración del proyecto. Estas capturas incluyen:
+En la carpeta [reports](https://github.com/JAcciarri/FRV-Challenge/tree/main/reports) se encuentran imágenes que documentan el proceso de desarrollo y configuración del proyecto. Estas capturas incluyen:
 
 - Configuración de Jenkins y creación de pipelines
 
