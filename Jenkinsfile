@@ -47,7 +47,7 @@ pipeline {
                 script {
                     sh 'mkdir -p target/allure-results/history'
                     sh 'cp -r target/allure-results/history target/allure-history || true'
-                    stash name: 'allure-history', includes: 'target/allure-history/**'
+                    stash name: 'allure-history', includes: 'target/allure-history/**', allowEmpty: true
                 }
 
                 allure([
