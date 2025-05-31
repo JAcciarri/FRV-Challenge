@@ -1,4 +1,4 @@
-package fravega.helpers;
+package fravega.utils.helpers;
 
 /**
  * Centraliza los selectores dinámicos usados en el modal de cuotas.

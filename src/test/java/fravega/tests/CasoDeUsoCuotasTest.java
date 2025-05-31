@@ -4,7 +4,7 @@ import fravega.actions.CommonActions;
 import fravega.base.ApplicationBaseTest;
 import fravega.dataproviders.CuotasDataProvider;
 import fravega.dataproviders.CuotasProductsJSONProvider;
-import fravega.helpers.CuotaHelper;
+import fravega.utils.helpers.CuotaHelper;
 import fravega.pojo.CuotasDisponibles;
 import fravega.pojo.TarjetaDeCredito;
 import fravega.pages.*;
