@@ -8,6 +8,15 @@
     <artifactId>FRV-Challenge</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <allure.version>2.24.0</allure.version>
+        <aspectj.version>1.9.20.1</aspectj.version>
+        <suiteXmlFile>testng/SmokeSuite.xml</suiteXmlFile>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -15,15 +24,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <suiteXmlFiles>
-                        <!--suppress UnresolvedMavenProperty -->
                         <suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
                     </suiteXmlFiles>
-                    <properties>
-                        <property>
-                            <name>suiteXmlFile</name>
-                            <value>testng/SmokeSuite.xml</value>
-                        </property>
-                    </properties>
+
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
@@ -46,14 +49,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <allure.version>2.24.0</allure.version>
-        <aspectj.version>1.9.20.1</aspectj.version>
-    </properties>
 
     <dependencyManagement>
         <dependencies>
