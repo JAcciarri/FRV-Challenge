@@ -15,16 +15,22 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import fravega.utils.LoggerUtil;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import io.qameta.allure.*;
+
+@Epic("Validación de cuotas")
+@Feature("Validaciones de promociones y bancos")
 
 public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
     private static final Logger logger = LoggerUtil.getLogger(CasoDeUsoCuotasTest.class);
 
 
     @Test(dataProvider = "injectAllCuotasAvailables", dataProviderClass = CuotasDataProvider.class)
+    @Severity(SeverityLevel.CRITICAL)
+    @Description("Valida que las promociones de cuotas sin interés se apliquen correctamente por tarjeta y banco")
+
     public void verificarPromocionesDeCuotasPorTarjetaYBanco(CuotasDisponibles inputDataCuotas) {
         WebDriver driver = getDriver();
         CommonActions commonActions = new CommonActions(driver);
@@ -94,7 +100,10 @@ public class CasoDeUsoCuotasTest extends ApplicationBaseTest {
         }
     }
 
+
     @Test(dataProvider = "cuotasHeladerasDataProvider", dataProviderClass = CuotasProductsJSONProvider.class)
+    @Severity(SeverityLevel.NORMAL)
+    @Description("Verifica la disponibilidad de cuotas por tipo de producto")
     public void verificarCuotasPorProducto(Map<String, String> data) {
         WebDriver driver = getDriver();
         CommonActions commonActions = new CommonActions(driver);
